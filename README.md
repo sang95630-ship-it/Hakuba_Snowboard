@@ -4,6 +4,16 @@
 > 結構化數據：[`data/resorts.json`](data/resorts.json)　｜　雪場地圖：[`assets/maps/`](assets/maps/)　｜　網站規劃：[`docs/site-plan.md`](docs/site-plan.md)（結構參考 [ZhangJiaJie](https://github.com/sang95630-ship-it/ZhangJiaJie)）
 > 資料整理日期：2026-09-29（雪票為 2025-26 季價格，2026-27 季公佈後需更新）
 
+## 網站
+
+單頁比較網站：[`index.html`](index.html)（數據來自 `data/resorts.json`，結構參考 ZhangJiaJie）
+
+- **功能**：雪場地圖輪播與全清放大（滾輪／雙指縮放、拖曳）、雪場位置地圖（點擊開 Google Maps）、可排序比較表、雪場翻轉卡、JPY/HKD 預算試算（雪票、住宿、交通、雪具租借）、深色模式
+- **本地預覽**：在專案資料夾執行 `python3 -m http.server`，開啟 <http://localhost:8000>（直接雙擊 `index.html` 會因瀏覽器安全限制讀不到 JSON）
+- **上線**：GitHub → Settings → Pages → 選擇分支與 `/ (root)`
+- **更新數據**：只需修改 `data/resorts.json`，網頁自動更新
+- **測試**：`node tests/site.test.js`（Playwright，216 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
+
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
 | 白馬八方尾根 Happo-One | [link](https://www.skiresort.com/en/ski-resort/happo-one-hakuba/) | [happo-one.jp](https://www.happo-one.jp/en/) | [map](assets/maps/happo-one.webp) |

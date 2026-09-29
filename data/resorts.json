@@ -20,8 +20,11 @@
     },
     "exchangeRate": {
       "pair": "JPY/HKD",
-      "rate": null,
-      "note": "網站以即時匯率換算；budget 只顯示 JPY 與 HKD"
+      "rate": 0.052,
+      "rateDate": "2025 參考值",
+      "status": "estimate",
+      "api": "https://open.er-api.com/v6/latest/JPY",
+      "note": "頁面載入時嘗試取得即時匯率；失敗則用此後備值。用戶可在預算試算內手動修改。"
     },
     "costs": {
       "currency": "JPY",
@@ -226,7 +229,7 @@
       "trailMap": {
         "thumb": "assets/maps/happo-one-thumb.webp",
         "full": "assets/maps/happo-one.webp",
-        "width": 1917,
+        "width": 1323,
         "height": 1077
       },
       "location": {
@@ -310,7 +313,7 @@
       "trailMap": {
         "thumb": "assets/maps/goryu-47-thumb.webp",
         "full": "assets/maps/goryu-47.webp",
-        "width": 1917,
+        "width": 1590,
         "height": 1077
       },
       "location": {
@@ -394,7 +397,7 @@
       "trailMap": {
         "thumb": "assets/maps/iwatake-thumb.webp",
         "full": "assets/maps/iwatake.webp",
-        "width": 1917,
+        "width": 1141,
         "height": 1077
       },
       "location": {
@@ -477,7 +480,7 @@
       "trailMap": {
         "thumb": "assets/maps/tsugaike-thumb.webp",
         "full": "assets/maps/tsugaike.webp",
-        "width": 1917,
+        "width": 1527,
         "height": 1077
       },
       "location": {
@@ -561,7 +564,7 @@
       "trailMap": {
         "thumb": "assets/maps/kashimayari-thumb.webp",
         "full": "assets/maps/kashimayari.webp",
-        "width": 1917,
+        "width": 1519,
         "height": 1077
       },
       "location": {

@@ -1,7 +1,7 @@
 # 網站結構規劃（參考 ZhangJiaJie project）
 
 > 參考來源：[sang95630-ship-it/ZhangJiaJie](https://github.com/sang95630-ship-it/ZhangJiaJie) `index.html`
-> 狀態：規劃階段，網站暫緩製作；數據先落在 `data/resorts.json`
+> 狀態：**已實作**（`index.html`），數據由 `data/resorts.json` 讀取；位置地圖採方案 A（Leaflet 1.9.4 自行託管於 `assets/vendor/leaflet/`）
 
 ## 1. 沿用 ZhangJiaJie 的技術框架
 
