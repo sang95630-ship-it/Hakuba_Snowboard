@@ -108,6 +108,42 @@
 - 想「一次住、多場滑」：住 **八方 / Echoland**（交通樞紐，接駁巴士最密集）。
 - 以初學為主：住 **栂池**（ski-in/out + 最佳初級坡 + 價格較低）。
 
+## 6. 交通費（每人單程，2025-26 參考）
+
+| 路線 | 票價 | 時間 |
+|---|---:|---|
+| 北陸新幹線 東京 → 長野（指定席） | ¥8,000–9,500 | 80–100 分 |
+| Alpico 特急巴士 長野 → 白馬 | ¥2,200–2,400 | 60–90 分 |
+| **小計：經長野** | **≈ ¥10,800** | 約 2.5–3 小時 |
+| 高速巴士 新宿 → 白馬（直達，動態票價） | ¥6,400–7,800 | 4.5–5 小時 |
+| Nagano Snow Shuttle 成田 / 羽田 → 白馬 | ≈ ¥11,000 | 約 5 小時 |
+| Hakuba Valley 谷內接駁巴士 | ¥800 / 程（持全山通票免費） | — |
+
+- Alpico 2025-26 季**停辦**成田機場直達巴士，機場直達只剩 Nagano Snow Shuttle 或包車。
+
+## 7. 雪具租借（每人每日，2025-26 參考）
+
+| 項目 | 每日價格 | 備註 |
+|---|---:|---|
+| 雪板 + 雪靴 | ¥5,500–8,600（常見 ¥6,500） | 5 日套票 ¥25,000–37,000 |
+| 雪衣 + 雪褲 | ≈ ¥5,000 | 部分店按件計，每件約 ¥3,800 |
+| 頭盔 | ¥1,500–3,300 | — |
+| 損壞保障 | ¥1,000 / 次 | 不論日數 |
+| 雪鏡、手套 | **不設租借** | 多數店舖基於衞生理由不出租，需自備 |
+
+- 租借店：[Rhythm Japan](https://rhythmjapan.com/winter-rentals-services) ・ [Hakuba.com Ski Hire](https://hakuba.com/plan-your-trip/hakuba-ski-hire/) ・ [NBS Japan](https://nbsjapan.com/hakuba/rentals/)
+- **5 日全套估算（板 + 衣 + 頭盔）**：≈ ¥13,500 / 日 × 5 = **¥67,500 / 人**
+
+## 8. 雪場位置（Google Maps）
+
+| 雪場 | 地址 | Google Maps |
+|---|---|---|
+| 栂池高原 | 長野県北安曇郡小谷村栂池高原12840-1 | [開啟](https://www.google.com/maps/search/?api=1&query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4) |
+| 白馬岩岳 | 長野県北安曇郡白馬村北城12056 | [開啟](https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%B2%A9%E5%B2%B3%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%86%E3%83%B3%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88) |
+| 白馬八方尾根 | 長野県北安曇郡白馬村北城八方 | [開啟](https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%85%AB%E6%96%B9%E5%B0%BE%E6%A0%B9%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4) |
+| 五竜 & 47 | 長野県北安曇郡白馬村神城22184-8 | [開啟](https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%82%A4%E3%83%96%E3%83%AB%E7%99%BD%E9%A6%AC%E4%BA%94%E7%AB%9C) |
+| 鹿島槍 | 長野県大町市平黒沢高原 | [開啟](https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%A7%8D%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4%E3%83%95%E3%82%A1%E3%83%9F%E3%83%AA%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AF) |
+
 ---
 
 ## 資料來源
@@ -122,5 +158,6 @@
 
 - [ ] 2026-27 季各雪場 1 日券公佈後更新
 - [ ] 補齊五竜 & 47、鹿島槍的總運力
+- [ ] 核對 5 個雪場的經緯度（`location.lat/lng` 現為估算）
 - [ ] 核對岩岳雪道總長（50 km vs 125 ha）
 - [ ] 以 `data/resorts.json` 建立 GitHub Pages 比較網站（沿用 ZhangJiaJie 單頁框架，見 `docs/site-plan.md`）

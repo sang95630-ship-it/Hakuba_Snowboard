@@ -21,6 +21,7 @@
 |---|---|---|---|---|
 | Hero：標題 + 4 張 stat-card + 設計邏輯 aside | `#overview` | Hero：「白馬 5 大雪場比較」+ stat-card（雪場數、雪道總長、全山通票價、最佳初學雪場）+「選場邏輯」aside | `#overview` | `meta.valleyPass`、`resorts[].slopes.totalKm` |
 | Hero 右側：地圖輪播 `mapSlides` | `#mapCarousel` | 5 張雪場地圖輪播（thumb），點擊開燈箱看全清版（full） | `#mapCarousel` | `resorts[].trailMap.thumb` / `.full` |
+| （新增） | — | **雪場位置地圖**：5 個雪場標記，點擊標記開 Google Maps | `#location` | `resorts[].location` |
 | 每日行程 timeline（day-card） | `#itinerary` | **總覽比較表**（新增元件）：可按雪票、雪道長度、初中級 %、白馬站車程排序 | `#compare` | 全部欄位 |
 | 景點詳情 flip card（正面相簿 + 背面交通訂票） | `#spots` | **雪場卡**：正面 = 標高、索道、雪道比例條、summary、地圖；背面 = 雪票、交通、住宿、官網 / skiresort 連結 | `#resorts` | `resorts[]` 每一筆一張卡 |
 | 預算試算（勾選門票 + 住宿 / 人數，CNY/HKD） | `#budget` | **滑雪預算試算**：選雪場 × 日數 × 人數，比較單場票 vs 全山通票；**只顯示 JPY 與 HKD** | `#budget` | `ticket.adult1Day`、`meta.valleyPass`、`lodging.priceRangePerRoomNight`、`meta.exchangeRate` |
@@ -30,6 +31,7 @@
 
 ## 3. 需新增的元件（ZhangJiaJie 沒有）
 
+- **雪場位置地圖**：見第 8 節
 - **比較表**：`<table>` + 表頭點擊排序；手機版改為橫向捲動或卡片列表
 - **程度比例條**：一條橫條分三段（初 / 中 / 高，綠 / 紅 / 黑，對應雪場地圖的顏色慣例）
 - **初學友善度星級**：`beginnerScore` 1–5
@@ -96,6 +98,39 @@ Hakuba_Snowboard/
 
 - 所有價格以 **JPY** 為基準儲存（`resorts.json`），HKD 為換算顯示
 - 匯率：頁面載入時由免費匯率 API 取得 JPY→HKD；失敗時使用 `meta.exchangeRate.rate` 作後備值，並在畫面標示「後備匯率」及日期
-- 輸入：人數、滑雪日數、每日雪場（或全山通票）、住宿晚數、每房每晚價格（預設取該雪場 `priceRangePerRoomNight` 中位數，可手動修改）
-- 輸出：雪票小計、住宿小計、總額、每人平均；每項同時顯示 `¥xx,xxx` 與 `HK$x,xxx`
 - 額外提示：當「全山通票總額 − 單場票總額」< 0 時提示改買全山通票
+
+**輸入欄位**
+
+| 分類 | 欄位 | 預設值 | 數據來源 |
+|---|---|---|---|
+| 基本 | 人數、滑雪日數、住宿晚數 | 2 人 / 5 日 / 5 晚 | — |
+| 雪票 | 每日雪場或全山通票 | 各雪場 1 日券 | `ticket.adult1Day`、`meta.valleyPass` |
+| 住宿 | 每房每晚價格 | 該雪場 `priceRangePerRoomNight` 中位數（可手改） | `lodging` |
+| 交通（往返） | 路線：經長野 / 新宿直達巴士 / 機場接駁 | 經長野 ¥10,800 × 2 程 | `meta.costs.transportPackages` |
+| 谷內交通 | 接駁巴士每日程數 | 2 程 × ¥800（勾選全山通票時自動 = ¥0） | `meta.costs.localTransport` |
+| 雪具租借 | 雪板 + 雪靴 / 雪衣褲 / 頭盔（逐項勾選） | ¥6,500 / ¥5,000 / ¥2,000 每日；損壞保障 ¥1,000 一次 | `meta.costs.rental` |
+
+**輸出**：雪票、住宿、交通、雪具四個小計 + 總額 + 每人平均；每項同時顯示 `¥xx,xxx` 與 `HK$x,xxx`
+
+**提示文字**：雪鏡、手套多數店舖不出租，需自備（列在預算卡底部）
+
+## 8. 雪場位置地圖
+
+**功能**
+- 一張白馬谷地圖，標出 5 個雪場（由北至南：栂池 → 岩岳 → 八方 → 五竜&47 → 鹿島槍）
+- 點擊標記 → 彈出小卡（雪場名、1 日券、白馬站車程）+「在 Google Maps 開啟」按鈕 → 新分頁打開 `location.googleMapsUrl`
+- 手機版一按即開 Google Maps App（`https://www.google.com/maps/search/?api=1&query=` 格式會自動喚起 App）
+- 地圖下方同時列出 5 個文字連結，方便不想操作地圖的用戶
+
+**實作方案（建議 A）**
+
+| 方案 | 做法 | 優點 | 缺點 |
+|---|---|---|---|
+| **A. Leaflet + OpenStreetMap** | cdnjs 載入 Leaflet（約 40 KB），OSM 圖磚 | 真實地圖、可縮放、免 API Key、免費 | 依賴外部圖磚；深色模式需加 CSS filter |
+| B. 內嵌 SVG 示意圖 | 自繪白馬谷南北走向示意圖 + 5 個標記 | 零依賴、完全配合雪地藍系、載入最快 | 非真實比例，不能縮放 |
+| C. Google Maps Embed API | iframe 嵌入 | 與 Google Maps 一致 | 需 API Key，多標記要用 JS API 並可能收費 |
+
+**數據**：`resorts[].location` = `{ mapQuery, address, lat, lng, coordStatus, googleMapsUrl }`
+- `googleMapsUrl` 以日文正式名稱搜尋（例：`エイブル白馬五竜`），**不依賴座標，必定定位準確**
+- `lat/lng` 目前為估算值（`coordStatus: "estimate"`），只影響標記在地圖上的位置；上線前在 Google Maps 右鍵複製座標替換

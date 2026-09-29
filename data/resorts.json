@@ -8,7 +8,8 @@
       "status 欄位：verified = 官方或 skiresort 數據；estimate = 依比例或索道類型推算；unknown = 未找到可靠數據。",
       "雪道公里數分佈 = 總長 × 官方初/中/高比例，屬推算值。",
       "住宿價格為旺季（1–2 月）每房每晚參考區間，須以訂房網站即時報價為準。",
-      "雪場地圖：thumb（1200px，頁面顯示）/ full（1917px 原解像度，燈箱放大檢視）。"
+      "雪場地圖：thumb（1200px，頁面顯示）/ full（1917px 原解像度，燈箱放大檢視）。",
+      "location.lat/lng 為估算座標（誤差可達數百米），只用於地圖標記位置；googleMapsUrl 以雪場日文正式名稱搜尋，點擊後由 Google Maps 定位。上線前請在 Google Maps 右鍵複製座標核對。"
     ],
     "valleyPass": {
       "name": "Hakuba Valley All-Mountain Day Pass",
@@ -21,6 +22,129 @@
       "pair": "JPY/HKD",
       "rate": null,
       "note": "網站以即時匯率換算；budget 只顯示 JPY 與 HKD"
+    },
+    "costs": {
+      "currency": "JPY",
+      "status": "2025-26 季參考價，每人單程；2026-27 季公佈後更新",
+      "transport": [
+        {
+          "id": "shinkansen",
+          "name": "北陸新幹線 東京 → 長野（指定席）",
+          "min": 8000,
+          "max": 9500,
+          "typical": 8500,
+          "durationMin": "80–100",
+          "url": "https://www.eki-net.com/"
+        },
+        {
+          "id": "nagano-bus",
+          "name": "Alpico 特急巴士 長野 → 白馬",
+          "min": 2200,
+          "max": 2400,
+          "typical": 2300,
+          "durationMin": "60–90",
+          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-nagano-winter-reserved"
+        },
+        {
+          "id": "shinjuku-bus",
+          "name": "高速巴士 新宿 → 白馬（直達，日間動態票價）",
+          "min": 6400,
+          "max": 7800,
+          "typical": 7000,
+          "durationMin": "270–300",
+          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-shinjuku-winter"
+        },
+        {
+          "id": "airport-shuttle",
+          "name": "Nagano Snow Shuttle 成田 / 羽田 → 白馬",
+          "min": 11000,
+          "max": 11000,
+          "typical": 11000,
+          "durationMin": "約 300",
+          "url": "https://naganosnowshuttle.com/destinations/hakuba-valley/"
+        }
+      ],
+      "transportPackages": [
+        {
+          "id": "via-nagano",
+          "name": "東京 → 新幹線 → 長野 → 巴士 → 白馬",
+          "legs": [
+            "shinkansen",
+            "nagano-bus"
+          ],
+          "typical": 10800
+        },
+        {
+          "id": "direct-bus",
+          "name": "新宿直達巴士",
+          "legs": [
+            "shinjuku-bus"
+          ],
+          "typical": 7000
+        },
+        {
+          "id": "airport",
+          "name": "機場直達接駁",
+          "legs": [
+            "airport-shuttle"
+          ],
+          "typical": 11000
+        }
+      ],
+      "localTransport": {
+        "valleyShuttle": {
+          "perRide": 800,
+          "child": 400,
+          "freeWith": "Hakuba Valley 全山通票（單場雪票是否免費請向官方確認）",
+          "url": "https://www.hakubavalley.com/en/access_en/shuttlebus_en/"
+        }
+      },
+      "rental": {
+        "snowboardSet": {
+          "name": "雪板 + 雪靴",
+          "perDayMin": 5500,
+          "perDayMax": 8600,
+          "perDayTypical": 6500,
+          "fiveDayRange": [
+            25000,
+            37000
+          ]
+        },
+        "wearSet": {
+          "name": "雪衣 + 雪褲",
+          "perDayTypical": 5000,
+          "note": "部分店舖按件計，每件約 ¥3,800/日"
+        },
+        "helmet": {
+          "name": "頭盔",
+          "perDayMin": 1500,
+          "perDayMax": 3300,
+          "perDayTypical": 2000
+        },
+        "damageCover": {
+          "name": "損壞保障",
+          "perRental": 1000
+        },
+        "notRentable": [
+          "雪鏡",
+          "手套"
+        ],
+        "notRentableNote": "多數店舖基於衞生理由不出租雪鏡及手套，需自備或購買",
+        "shops": [
+          {
+            "name": "Rhythm Japan",
+            "url": "https://rhythmjapan.com/winter-rentals-services"
+          },
+          {
+            "name": "Hakuba.com Ski Hire",
+            "url": "https://hakuba.com/plan-your-trip/hakuba-ski-hire/"
+          },
+          {
+            "name": "NBS Japan",
+            "url": "https://nbsjapan.com/hakuba/rentals/"
+          }
+        ]
+      }
     }
   },
   "resorts": [
@@ -100,6 +224,14 @@
         "full": "assets/maps/happo-one.webp",
         "width": 1917,
         "height": 1077
+      },
+      "location": {
+        "mapQuery": "白馬八方尾根スキー場",
+        "address": "長野県北安曇郡白馬村北城八方",
+        "lat": 36.6988,
+        "lng": 137.8385,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%85%AB%E6%96%B9%E5%B0%BE%E6%A0%B9%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
       }
     },
     {
@@ -176,6 +308,14 @@
         "full": "assets/maps/goryu-47.webp",
         "width": 1917,
         "height": 1077
+      },
+      "location": {
+        "mapQuery": "エイブル白馬五竜",
+        "address": "長野県北安曇郡白馬村神城22184-8",
+        "lat": 36.6668,
+        "lng": 137.833,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%82%A4%E3%83%96%E3%83%AB%E7%99%BD%E9%A6%AC%E4%BA%94%E7%AB%9C"
       }
     },
     {
@@ -252,6 +392,14 @@
         "full": "assets/maps/iwatake.webp",
         "width": 1917,
         "height": 1077
+      },
+      "location": {
+        "mapQuery": "白馬岩岳マウンテンリゾート",
+        "address": "長野県北安曇郡白馬村北城12056",
+        "lat": 36.7175,
+        "lng": 137.8525,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%B2%A9%E5%B2%B3%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%86%E3%83%B3%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88"
       }
     },
     {
@@ -327,6 +475,14 @@
         "full": "assets/maps/tsugaike.webp",
         "width": 1917,
         "height": 1077
+      },
+      "location": {
+        "mapQuery": "栂池高原スキー場",
+        "address": "長野県北安曇郡小谷村栂池高原12840-1",
+        "lat": 36.763,
+        "lng": 137.844,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
       }
     },
     {
@@ -403,6 +559,14 @@
         "full": "assets/maps/kashimayari.webp",
         "width": 1917,
         "height": 1077
+      },
+      "location": {
+        "mapQuery": "鹿島槍スキー場ファミリーパーク",
+        "address": "長野県大町市平黒沢高原",
+        "lat": 36.5965,
+        "lng": 137.8215,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%A7%8D%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4%E3%83%95%E3%82%A1%E3%83%9F%E3%83%AA%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AF"
       }
     }
   ]
