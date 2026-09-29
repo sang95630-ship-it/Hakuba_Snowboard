@@ -84,7 +84,7 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   console.log('\n[3] 表格排序');
   const colVals = async n => page.$$eval(`#compareTable tbody tr > :nth-child(${n})`, c => c.map(x => x.textContent.replace(/\s*✓$/, '').trim()));
   await page.click('[data-sort="ticket"]');
-  eq(JSON.stringify(await colVals(2)), JSON.stringify(['¥5,900', '¥7,000', '¥8,200', '¥8,400', '¥9,500']), '1 日券升序');
+  eq(JSON.stringify(await colVals(2)), JSON.stringify(['¥5,900', '¥6,500', '¥7,000', '¥8,400', '¥9,500']), '1 日券升序（栂池早鳥 ¥6,500）');
   eq(await page.getAttribute('th:has([data-sort="ticket"])', 'aria-sort'), 'ascending', 'aria-sort ascending');
   await page.click('[data-sort="ticket"]');
   eq((await colVals(2))[0], '¥9,500', '再按變降序');
@@ -104,13 +104,15 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRoute'), 'narita-rail', '預設路線 = 成田鐵路（已核實）');
   eq(await page.inputValue('#bRate'), '0.0498', '預設匯率 0.0498');
   eq(await page.inputValue('#bRoomPrice'), '32000', '預設房價 = 栂池核實範圍中位數');
-  // default: 82,000 + 160,000 + (60,400 + 16,000) + 117,000 = 435,400
-  eq(await total(), '¥435,400', '預設總額');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$21,683', '預設總額 HKD（0.0498）');
-  ok((await page.textContent('#passAdvice')).includes('¥6,000'), '全山通票比較：目前便宜 ¥6,000');
+  // default: 65,000 + 160,000 + (60,400 + 16,000) + 117,000 = 418,400
+  eq(await total(), '¥418,400', '預設總額');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$20,836', '預設總額 HKD（0.0498）');
+  ok((await page.textContent('#passAdvice')).includes('¥23,000'), '全山通票比較：目前便宜 ¥23,000');
+  ok((await page.textContent('#dayList')).includes('¥6,500 早鳥'), '每日選單標示栂池早鳥價');
   const resText = await page.textContent('#resultRows');
-  ok(resText.includes('¥82,000') && resText.includes('¥160,000') && resText.includes('¥76,400') && resText.includes('¥117,000'), '四項小計正確');
-  ok(resText.includes('每人平均 ¥217,700'), '每人平均');
+  ok(resText.includes('¥65,000') && resText.includes('¥160,000') && resText.includes('¥76,400') && resText.includes('¥117,000'), '四項小計正確');
+  ok(resText.includes('每人平均 ¥209,200'), '每人平均');
+  ok(resText.includes('每人 ¥32,500'), '雪票每人 ¥6,500 × 5');
   ok(resText.includes('往返 ¥15,100 × 2 程'), '交通按成田鐵路 ¥15,100／程');
   eq(await page.locator('#legList li').count(), 3, '交通分段 3 段');
   const legTxt = await page.textContent('#legList');
@@ -124,7 +126,7 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRooms'), '2', '3 人自動 2 房');
   eq(await page.inputValue('#bRentPeople'), '3', '租借人數跟隨');
   // ticket 8200*5*3; lodging 32000*2*5; transport 15100*2*3 + 800*2*5*3; rental (57500+1000)*3
-  eq(await total(), yen(123000 + 320000 + 90600 + 24000 + 175500), '3 人總額');
+  eq(await total(), yen(97500 + 320000 + 90600 + 24000 + 175500), '3 人總額');
 
   await page.click('[data-fill="valley"]');
   eq(await total(), yen(156000 + 320000 + 90600 + 175500), '全山通票總額（接駁免費）');
@@ -208,7 +210,9 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
       if (it.purchaseBy) ok(txt.includes(it.purchaseBy), '  截止日期');
     }
   }
+  ok((await page.locator('#card-tsugaike .face.front .pill').first().textContent()).includes('早鳥 1 日券 ¥6,500'), '栂池卡正面顯示早鳥 ¥6,500');
   const tsBack = page.locator('#card-tsugaike .face.back');
+  ok((await tsBack.locator('.info-box').first().textContent()).includes('2026-11-30'), '栂池卡背雪票註明截止日');
   ok((await tsBack.textContent()).includes('2022-23'), '栂池租借標示 2022-23 舊價目表');
   ok((await page.locator('#card-iwatake .face.back').textContent()).includes('可能已含裝備租借'), '岩岳 KKday 標示可能含租借');
   ok((await page.locator('#card-goryu-47 .face.back .info-box').first().textContent()).includes('已核實'), '五竜雪票標示已核實');

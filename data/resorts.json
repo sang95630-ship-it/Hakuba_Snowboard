@@ -533,10 +533,14 @@
         "longestKm": 4.6
       },
       "ticket": {
-        "adult1Day": 8200,
-        "season": "2025-26 大人 1 日券（未核實）；2026-27 早鳥 ¥6,500 起，見下方已核實價格",
-        "url": "https://www.tsugaike.gr.jp/",
-        "status": "estimate"
+        "adult1Day": 6500,
+        "season": "2026-27 早鳥 1 日券（不可取消，截止購買 2026-11-30）；可取消版 ¥7,280；2025-26 正價 ¥8,200",
+        "url": "https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html",
+        "status": "verified",
+        "regular2025_26": 8200,
+        "checked": "2026-09 用戶核實",
+        "priceType": "early-bird",
+        "purchaseBy": "2026-11-30"
       },
       "access": {
         "fromHakubaStationMin": 20,

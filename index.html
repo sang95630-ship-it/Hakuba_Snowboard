@@ -637,7 +637,7 @@ function compareHTML(){
       </table>
     </div>
     <div class="ratio-legend"><span class="b">初級</span><span class="m">中級</span><span class="a">高級</span></div>
-    <p class="table-hint">手機可左右滑動表格。雪票為 2025-26 季大人 1 日券窗口價；總運力「未公開」表示官方及 skiresort 均未提供。</p>
+    <p class="table-hint">手機可左右滑動表格。雪票為 2025-26 季大人 1 日券窗口價，<strong>栂池除外：採用已核實的 2026-27 早鳥價 ¥6,500</strong>（須於 2026-11-30 前購買、不可取消）；總運力「未公開」表示官方及 skiresort 均未提供。</p>
   </div>
 </section>`;
 }
@@ -710,7 +710,7 @@ function cardHTML(r, i, meta){
         <button class="flip-btn" type="button" data-flip="open" aria-controls="card-${esc(r.id)}">雪票・交通・住宿 →</button>
       </div>
       <div class="pill-row">
-        <span class="pill">1 日券 ${yen(r.ticket.adult1Day)}</span>
+        <span class="pill">${r.ticket.priceType === 'early-bird' ? '早鳥 1 日券' : '1 日券'} ${yen(r.ticket.adult1Day)}</span>
         <span class="pill">白馬站 ${orDash(r.access.fromHakubaStationMin, v => v + ' 分')}</span>
         <span class="pill">初學 <span class="stars">${'★'.repeat(r.beginnerScore)}</span></span>
       </div>
@@ -830,7 +830,7 @@ function budgetHTML(R, meta){
             ${R.map(r => `<button type="button" data-fill="${esc(r.id)}">全部 ${esc(r.name)}</button>`).join('')}
           </div>
           <div class="day-list" id="dayList"></div>
-          <p class="hint">全山通票以 2025-26 季 ${yen(vp.adult1Day_2025_26)} 計（與單場票同季比較）；2026-27 季已公佈為 ${yen(vp.adult1Day_2026_27)}。</p>
+          <p class="hint">全山通票以 2025-26 季 ${yen(vp.adult1Day_2025_26)} 計；2026-27 季已公佈為 ${yen(vp.adult1Day_2026_27)}。${R.filter(r => r.ticket.priceType === 'early-bird').map(r => `${esc(r.name)}按早鳥價 ${yen(r.ticket.adult1Day)} 計（截止購買 ${esc(r.ticket.purchaseBy)}，不可取消）。`).join('')}</p>
         </fieldset>
         <fieldset>
           <legend>住宿</legend>
@@ -909,7 +909,7 @@ function initBudget(R, meta){
     const days = clampInt(el('bDays'), 1, 14, 5);
     while (dayChoices.length < days) dayChoices.push(dayChoices.length ? dayChoices[dayChoices.length - 1] : defaultResort);
     const opts = id => `<option value="valley"${id === 'valley' ? ' selected' : ''}>全山通票（${yen(VALLEY)}）</option>` +
-      R.map(r => `<option value="${esc(r.id)}"${r.id === id ? ' selected' : ''}>${esc(r.name)}（${yen(r.ticket.adult1Day)}）</option>`).join('');
+      R.map(r => `<option value="${esc(r.id)}"${r.id === id ? ' selected' : ''}>${esc(r.name)}（${yen(r.ticket.adult1Day)}${r.ticket.priceType === 'early-bird' ? ' 早鳥' : ''}）</option>`).join('');
     el('dayList').innerHTML = Array.from({ length: days }, (_, i) =>
       `<div class="day-row"><span>Day ${i + 1}</span><select data-day="${i}" aria-label="Day ${i + 1} 雪票">${opts(dayChoices[i])}</select></div>`).join('');
   };
