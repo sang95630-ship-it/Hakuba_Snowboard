@@ -6,11 +6,11 @@
 
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
-| 白馬八方尾根 Happo-One | [link](https://www.skiresort.com/en/ski-resort/happo-one-hakuba/) | [happo-one.jp](https://www.happo-one.jp/en/) | [map](assets/maps/happo-one.png) |
-| 白馬五竜 & Hakuba47 | [link](https://www.skiresort.com/en/ski-resort/hakuba-47-goryu/) | [hakubaescal.com](https://www.hakubaescal.com/winter-en/) | [map](assets/maps/goryu-47.png) |
-| 白馬岩岳 Iwatake | [link](https://www.skiresort.com/en/ski-resort/hakuba-iwatake-mountain-resort/) | [iwatake-mountain-resort.com](https://iwatake-mountain-resort.com/) | [map](assets/maps/iwatake.png) |
-| 栂池高原 Tsugaike | [link](https://www.skiresort.com/en/ski-resort/tsugaike-kogen/) | [tsugaike.gr.jp](https://www.tsugaike.gr.jp/) | [map](assets/maps/tsugaike.png) |
-| 鹿島槍 Kashimayari | [link](https://www.skiresort.com/en/ski-resort/sun-alpina-kashimayari/) | [kashimayari.net](https://www.kashimayari.net/snow/) | [map](assets/maps/kashimayari.png) |
+| 白馬八方尾根 Happo-One | [link](https://www.skiresort.com/en/ski-resort/happo-one-hakuba/) | [happo-one.jp](https://www.happo-one.jp/en/) | [map](assets/maps/happo-one.webp) |
+| 白馬五竜 & Hakuba47 | [link](https://www.skiresort.com/en/ski-resort/hakuba-47-goryu/) | [hakubaescal.com](https://www.hakubaescal.com/winter-en/) | [map](assets/maps/goryu-47.webp) |
+| 白馬岩岳 Iwatake | [link](https://www.skiresort.com/en/ski-resort/hakuba-iwatake-mountain-resort/) | [iwatake-mountain-resort.com](https://iwatake-mountain-resort.com/) | [map](assets/maps/iwatake.webp) |
+| 栂池高原 Tsugaike | [link](https://www.skiresort.com/en/ski-resort/tsugaike-kogen/) | [tsugaike.gr.jp](https://www.tsugaike.gr.jp/) | [map](assets/maps/tsugaike.webp) |
+| 鹿島槍 Kashimayari | [link](https://www.skiresort.com/en/ski-resort/sun-alpina-kashimayari/) | [kashimayari.net](https://www.kashimayari.net/snow/) | [map](assets/maps/kashimayari.webp) |
 
 ---
 
