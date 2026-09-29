@@ -107,7 +107,7 @@ Hakuba_Snowboard/
 | 基本 | 人數、滑雪日數、住宿晚數 | 2 人 / 5 日 / 5 晚 | — |
 | 雪票 | 每日雪場或全山通票 | 各雪場 1 日券 | `ticket.adult1Day`、`meta.valleyPass` |
 | 住宿 | 每房每晚價格 | 該雪場 `priceRangePerRoomNight` 中位數（可手改） | `lodging` |
-| 交通（往返） | 路線：經長野 / 新宿直達巴士 / 機場接駁 | 經長野 ¥10,800 × 2 程 | `meta.costs.transportPackages` |
+| 交通（往返） | 路線：**機場接駁（預設）** / 經長野 / 新宿直達巴士 | 成田 / 羽田 → 白馬 Nagano Snow Shuttle ¥11,000 × 2 程 = ¥22,000 / 人 | `meta.costs.transportPackages`（`defaultTransportPackage: "airport"`） |
 | 谷內交通 | 接駁巴士每日程數 | 2 程 × ¥800（勾選全山通票時自動 = ¥0） | `meta.costs.localTransport` |
 | 雪具租借 | 雪板 + 雪靴 / 雪衣褲 / 頭盔（逐項勾選） | ¥6,500 / ¥5,000 / ¥2,000 每日；損壞保障 ¥1,000 一次 | `meta.costs.rental` |
 

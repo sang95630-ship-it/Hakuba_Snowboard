@@ -66,13 +66,23 @@
       ],
       "transportPackages": [
         {
+          "id": "airport",
+          "name": "機場直達接駁",
+          "legs": [
+            "airport-shuttle"
+          ],
+          "typical": 11000,
+          "default": true
+        },
+        {
           "id": "via-nagano",
           "name": "東京 → 新幹線 → 長野 → 巴士 → 白馬",
           "legs": [
             "shinkansen",
             "nagano-bus"
           ],
-          "typical": 10800
+          "typical": 10800,
+          "default": false
         },
         {
           "id": "direct-bus",
@@ -80,15 +90,8 @@
           "legs": [
             "shinjuku-bus"
           ],
-          "typical": 7000
-        },
-        {
-          "id": "airport",
-          "name": "機場直達接駁",
-          "legs": [
-            "airport-shuttle"
-          ],
-          "typical": 11000
+          "typical": 7000,
+          "default": false
         }
       ],
       "localTransport": {
@@ -144,7 +147,8 @@
             "url": "https://nbsjapan.com/hakuba/rentals/"
           }
         ]
-      }
+      },
+      "defaultTransportPackage": "airport"
     }
   },
   "resorts": [
