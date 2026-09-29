@@ -1,0 +1,580 @@
+{
+  "meta": {
+    "title": "Hakuba Valley 雪場比較數據",
+    "compiled": "2026-09-29",
+    "currency": "JPY",
+    "notes": [
+      "雪票價格為 2025-26 季大人 1 日券（窗口價），2026-27 季價格多數尚未公佈，Hakuba Valley 全山通票 2026-27 已公佈為 ¥11,100。",
+      "status 欄位：verified = 官方或 skiresort 數據；estimate = 依比例或索道類型推算；unknown = 未找到可靠數據。",
+      "雪道公里數分佈 = 總長 × 官方初/中/高比例，屬推算值。",
+      "住宿價格為旺季（1–2 月）每房每晚參考區間，須以訂房網站即時報價為準。",
+      "雪場地圖：thumb（1200px，頁面顯示）/ full（1917px 原解像度，燈箱放大檢視）。",
+      "location.lat/lng 為估算座標（誤差可達數百米），只用於地圖標記位置；googleMapsUrl 以雪場日文正式名稱搜尋，點擊後由 Google Maps 定位。上線前請在 Google Maps 右鍵複製座標核對。"
+    ],
+    "valleyPass": {
+      "name": "Hakuba Valley All-Mountain Day Pass",
+      "adult1Day_2025_26": 10400,
+      "adult1Day_2026_27": 11100,
+      "coverage": "Hakuba Valley 10 個雪場 + 當日谷內接駁巴士",
+      "url": "https://www.hakubavalley.com/en/ticket_en/"
+    },
+    "exchangeRate": {
+      "pair": "JPY/HKD",
+      "rate": 0.052,
+      "rateDate": "2025 參考值",
+      "status": "estimate",
+      "api": "https://open.er-api.com/v6/latest/JPY",
+      "note": "頁面載入時嘗試取得即時匯率；失敗則用此後備值。用戶可在預算試算內手動修改。"
+    },
+    "costs": {
+      "currency": "JPY",
+      "status": "2025-26 季參考價，每人單程；2026-27 季公佈後更新",
+      "transport": [
+        {
+          "id": "shinkansen",
+          "name": "北陸新幹線 東京 → 長野（指定席）",
+          "min": 8000,
+          "max": 9500,
+          "typical": 8500,
+          "durationMin": "80–100",
+          "url": "https://www.eki-net.com/"
+        },
+        {
+          "id": "nagano-bus",
+          "name": "Alpico 特急巴士 長野 → 白馬",
+          "min": 2200,
+          "max": 2400,
+          "typical": 2300,
+          "durationMin": "60–90",
+          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-nagano-winter-reserved"
+        },
+        {
+          "id": "shinjuku-bus",
+          "name": "高速巴士 新宿 → 白馬（直達，日間動態票價）",
+          "min": 6400,
+          "max": 7800,
+          "typical": 7000,
+          "durationMin": "270–300",
+          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-shinjuku-winter"
+        },
+        {
+          "id": "airport-shuttle",
+          "name": "Nagano Snow Shuttle 成田 / 羽田 → 白馬",
+          "min": 11000,
+          "max": 11000,
+          "typical": 11000,
+          "durationMin": "約 300",
+          "url": "https://naganosnowshuttle.com/destinations/hakuba-valley/"
+        }
+      ],
+      "transportPackages": [
+        {
+          "id": "airport",
+          "name": "機場直達接駁",
+          "legs": [
+            "airport-shuttle"
+          ],
+          "typical": 11000,
+          "default": true
+        },
+        {
+          "id": "via-nagano",
+          "name": "東京 → 新幹線 → 長野 → 巴士 → 白馬",
+          "legs": [
+            "shinkansen",
+            "nagano-bus"
+          ],
+          "typical": 10800,
+          "default": false
+        },
+        {
+          "id": "direct-bus",
+          "name": "新宿直達巴士",
+          "legs": [
+            "shinjuku-bus"
+          ],
+          "typical": 7000,
+          "default": false
+        }
+      ],
+      "localTransport": {
+        "valleyShuttle": {
+          "perRide": 800,
+          "child": 400,
+          "freeWith": "Hakuba Valley 全山通票（單場雪票是否免費請向官方確認）",
+          "url": "https://www.hakubavalley.com/en/access_en/shuttlebus_en/"
+        }
+      },
+      "rental": {
+        "snowboardSet": {
+          "name": "雪板 + 雪靴",
+          "perDayMin": 5500,
+          "perDayMax": 8600,
+          "perDayTypical": 6500,
+          "fiveDayRange": [
+            25000,
+            37000
+          ]
+        },
+        "wearSet": {
+          "name": "雪衣 + 雪褲",
+          "perDayTypical": 5000,
+          "note": "部分店舖按件計，每件約 ¥3,800/日"
+        },
+        "helmet": {
+          "name": "頭盔",
+          "perDayMin": 1500,
+          "perDayMax": 3300,
+          "perDayTypical": 2000
+        },
+        "damageCover": {
+          "name": "損壞保障",
+          "perRental": 1000
+        },
+        "notRentable": [
+          "雪鏡",
+          "手套"
+        ],
+        "notRentableNote": "多數店舖基於衞生理由不出租雪鏡及手套，需自備或購買",
+        "shops": [
+          {
+            "name": "Rhythm Japan",
+            "url": "https://rhythmjapan.com/winter-rentals-services"
+          },
+          {
+            "name": "Hakuba.com Ski Hire",
+            "url": "https://hakuba.com/plan-your-trip/hakuba-ski-hire/"
+          },
+          {
+            "name": "NBS Japan",
+            "url": "https://nbsjapan.com/hakuba/rentals/"
+          }
+        ]
+      },
+      "defaultTransportPackage": "airport"
+    }
+  },
+  "resorts": [
+    {
+      "id": "happo-one",
+      "name": "白馬八方尾根",
+      "nameEn": "Hakuba Happo-One",
+      "skiresortUrl": "https://www.skiresort.com/en/ski-resort/happo-one-hakuba/",
+      "officialUrl": "https://www.happo-one.jp/en/",
+      "elevation": {
+        "base": 760,
+        "top": 1831,
+        "vertical": 1071
+      },
+      "lifts": {
+        "total": 23,
+        "gondola": 1,
+        "chairlifts": 22,
+        "capacityPerHour": 29500,
+        "capacityStatus": "verified",
+        "mainLift": {
+          "name": "Gondola Adam（6 人）",
+          "lengthM": 2064,
+          "capacityPerHour": 1350,
+          "note": "2027-12 預計更新為 10 人座，運力 2,400 人/時"
+        }
+      },
+      "slopes": {
+        "totalKm": 52,
+        "runs": 16,
+        "ratio": {
+          "beginner": 30,
+          "intermediate": 50,
+          "advanced": 20
+        },
+        "km": {
+          "beginner": 15.6,
+          "intermediate": 26.0,
+          "advanced": 10.4,
+          "status": "estimate"
+        },
+        "longestKm": null
+      },
+      "ticket": {
+        "adult1Day": 8400,
+        "season": "2025-26 旺季 (12/20–3/15)",
+        "spring": 5500,
+        "url": "https://www.happo-one.jp/en/ticket/"
+      },
+      "access": {
+        "fromHakubaStationMin": 5,
+        "fromNaganoBusMin": 70,
+        "naganoBusStop": "Hakuba Happo（八方巴士總站）",
+        "notes": "八方村 / 和田野 / Echoland 多數住宿可步行或乘免費接駁"
+      },
+      "lodging": {
+        "areas": [
+          "八方村 (Happo)",
+          "和田野 (Wadano)",
+          "Echoland"
+        ],
+        "distanceToLift": "步行 0–15 分鐘；Echoland 約 5 分鐘車程",
+        "priceRangePerRoomNight": [
+          12000,
+          60000
+        ],
+        "priceStatus": "estimate",
+        "links": {
+          "booking": "https://www.booking.com/searchresults.html?ss=Happo%2C+Hakuba",
+          "googleHotels": "https://www.google.com/travel/search?q=Hakuba%20Happo%20hotels"
+        }
+      },
+      "beginnerScore": 3,
+      "summary": "白馬最大、垂直落差最大；初級區集中於咲花/名木山，山頂段偏中高級。適合中級以上或混合程度的團體。",
+      "trailMap": {
+        "thumb": "assets/maps/happo-one-thumb.webp",
+        "full": "assets/maps/happo-one.webp",
+        "width": 1323,
+        "height": 1077
+      },
+      "location": {
+        "mapQuery": "白馬八方尾根スキー場",
+        "address": "長野県北安曇郡白馬村北城八方",
+        "lat": 36.6988,
+        "lng": 137.8385,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%85%AB%E6%96%B9%E5%B0%BE%E6%A0%B9%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
+      }
+    },
+    {
+      "id": "goryu-47",
+      "name": "白馬五竜 & Hakuba47",
+      "nameEn": "Hakuba Goryu & Hakuba47",
+      "skiresortUrl": "https://www.skiresort.com/en/ski-resort/hakuba-47-goryu/",
+      "officialUrl": "https://www.hakubaescal.com/winter-en/",
+      "elevation": {
+        "base": 768,
+        "top": 1676,
+        "vertical": 908
+      },
+      "lifts": {
+        "total": 20,
+        "gondola": 2,
+        "chairlifts": 18,
+        "capacityPerHour": null,
+        "capacityStatus": "unknown",
+        "mainLift": {
+          "name": "五竜 Telecabin（8 人）/ Hakuba47 Gondola Line B",
+          "lengthM": 2000,
+          "capacityPerHour": 2400,
+          "note": "skiresort 所列 8 人纜車 2,400 人/時、6 人纜車 2,000 人/時"
+        }
+      },
+      "slopes": {
+        "totalKm": 22.7,
+        "runs": 23,
+        "ratio": {
+          "beginner": 30,
+          "intermediate": 40,
+          "advanced": 30
+        },
+        "km": {
+          "beginner": 6.8,
+          "intermediate": 9.1,
+          "advanced": 6.8,
+          "status": "estimate"
+        },
+        "longestKm": null
+      },
+      "ticket": {
+        "adult1Day": 9500,
+        "season": "2025-26 旺季窗口價（網購 ¥9,000；淡季 ¥7,000 起）",
+        "url": "https://www.hakubaescal.com/winter-en/tickets/lift/"
+      },
+      "access": {
+        "fromHakubaStationMin": 10,
+        "fromNaganoBusMin": 60,
+        "naganoBusStop": "Hakuba Goryu（Escal Plaza）",
+        "notes": "JR 神城站步行約 10–15 分鐘；五竜與 47 山頂互通"
+      },
+      "lodging": {
+        "areas": [
+          "神城 / 五竜 (Kamishiro)",
+          "Hakuba47 山腳"
+        ],
+        "distanceToLift": "五竜 Escal Plaza 周邊步行 0–10 分鐘",
+        "priceRangePerRoomNight": [
+          12000,
+          35000
+        ],
+        "priceStatus": "estimate",
+        "links": {
+          "booking": "https://www.booking.com/searchresults.html?ss=Kamishiro%2C+Hakuba",
+          "googleHotels": "https://www.google.com/travel/search?q=Hakuba%20Goryu%20hotels"
+        }
+      },
+      "beginnerScore": 3,
+      "summary": "五竜 Toomi（とおみ）區有寬闊初級坡與夜滑；Hakuba47 側偏中高級及樹林區。雪票最貴但有夜滑。",
+      "trailMap": {
+        "thumb": "assets/maps/goryu-47-thumb.webp",
+        "full": "assets/maps/goryu-47.webp",
+        "width": 1590,
+        "height": 1077
+      },
+      "location": {
+        "mapQuery": "エイブル白馬五竜",
+        "address": "長野県北安曇郡白馬村神城22184-8",
+        "lat": 36.6668,
+        "lng": 137.833,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%82%A4%E3%83%96%E3%83%AB%E7%99%BD%E9%A6%AC%E4%BA%94%E7%AB%9C"
+      }
+    },
+    {
+      "id": "iwatake",
+      "name": "白馬岩岳",
+      "nameEn": "Hakuba Iwatake Mountain Resort",
+      "skiresortUrl": "https://www.skiresort.com/en/ski-resort/hakuba-iwatake-mountain-resort/",
+      "officialUrl": "https://iwatake-mountain-resort.com/",
+      "elevation": {
+        "base": 750,
+        "top": 1289,
+        "vertical": 539
+      },
+      "lifts": {
+        "total": 12,
+        "gondola": 1,
+        "chairlifts": 11,
+        "capacityPerHour": 11100,
+        "capacityStatus": "estimate",
+        "mainLift": {
+          "name": "Gondola Noah（10 人，2024-12 新建）",
+          "lengthM": 2183,
+          "capacityPerHour": 2400,
+          "note": "最大 2,460 人/時"
+        }
+      },
+      "slopes": {
+        "totalKm": 50,
+        "runs": 26,
+        "ratio": {
+          "beginner": 30,
+          "intermediate": 50,
+          "advanced": 20
+        },
+        "km": {
+          "beginner": 15.0,
+          "intermediate": 25.0,
+          "advanced": 10.0,
+          "status": "estimate"
+        },
+        "longestKm": 3.3
+      },
+      "ticket": {
+        "adult1Day": 7000,
+        "season": "2025-26 大人 1 日券（早鳥 ¥5,700）",
+        "url": "https://iwatake-mountain-resort.com/winter/rates"
+      },
+      "access": {
+        "fromHakubaStationMin": 10,
+        "fromNaganoBusMin": null,
+        "naganoBusStop": "無長野直達；由八方/白馬站轉谷內接駁",
+        "notes": "位於白馬村北側，Hakuba Valley 接駁巴士可達"
+      },
+      "lodging": {
+        "areas": [
+          "岩岳山腳 (Iwatake)",
+          "白馬站周邊"
+        ],
+        "distanceToLift": "山腳民宿步行 0–10 分鐘",
+        "priceRangePerRoomNight": [
+          10000,
+          30000
+        ],
+        "priceStatus": "estimate",
+        "links": {
+          "booking": "https://www.booking.com/searchresults.html?ss=Iwatake%2C+Hakuba",
+          "googleHotels": "https://www.google.com/travel/search?q=Hakuba%20Iwatake%20hotels"
+        }
+      },
+      "beginnerScore": 4,
+      "summary": "中級滑手天堂，人流較少；山頂 Mountain Harbor 觀景一流。垂直落差最小。",
+      "trailMap": {
+        "thumb": "assets/maps/iwatake-thumb.webp",
+        "full": "assets/maps/iwatake.webp",
+        "width": 1141,
+        "height": 1077
+      },
+      "location": {
+        "mapQuery": "白馬岩岳マウンテンリゾート",
+        "address": "長野県北安曇郡白馬村北城12056",
+        "lat": 36.7175,
+        "lng": 137.8525,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%B2%A9%E5%B2%B3%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%86%E3%83%B3%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88"
+      }
+    },
+    {
+      "id": "tsugaike",
+      "name": "栂池高原",
+      "nameEn": "Tsugaike Kogen / Tsugaike Mountain Resort",
+      "skiresortUrl": "https://www.skiresort.com/en/ski-resort/tsugaike-kogen/",
+      "officialUrl": "https://www.tsugaike.gr.jp/",
+      "elevation": {
+        "base": 800,
+        "top": 1704,
+        "vertical": 904
+      },
+      "lifts": {
+        "total": 20,
+        "gondola": 1,
+        "chairlifts": 19,
+        "capacityPerHour": 43800,
+        "capacityStatus": "verified",
+        "mainLift": {
+          "name": "Gondola Eve（6 人）",
+          "lengthM": 4120,
+          "capacityPerHour": 1350,
+          "note": "日本第二長普通索道，單程約 20 分鐘"
+        }
+      },
+      "slopes": {
+        "totalKm": 25,
+        "runs": 11,
+        "ratio": {
+          "beginner": 40,
+          "intermediate": 40,
+          "advanced": 20
+        },
+        "km": {
+          "beginner": 10.0,
+          "intermediate": 10.0,
+          "advanced": 5.0,
+          "status": "estimate"
+        },
+        "longestKm": 4.6
+      },
+      "ticket": {
+        "adult1Day": 8200,
+        "season": "2025-26 大人 1 日券（早鳥 ¥5,900）",
+        "url": "https://www.tsugaike.gr.jp/"
+      },
+      "access": {
+        "fromHakubaStationMin": 20,
+        "fromNaganoBusMin": 90,
+        "naganoBusStop": "Tsugaike Kogen（終點站）",
+        "notes": "位於小谷村，白馬谷最北"
+      },
+      "lodging": {
+        "areas": [
+          "栂池高原 (Tsugaike Kogen)"
+        ],
+        "distanceToLift": "高原村落步行 0–10 分鐘（ski-in/out 選擇多）",
+        "priceRangePerRoomNight": [
+          10000,
+          30000
+        ],
+        "priceStatus": "estimate",
+        "links": {
+          "booking": "https://www.booking.com/searchresults.html?ss=Tsugaike+Kogen",
+          "googleHotels": "https://www.google.com/travel/search?q=Tsugaike%20Kogen%20hotels"
+        }
+      },
+      "beginnerScore": 5,
+      "summary": "山腳「鐘の鳴る丘」平均坡度約 8°、寬度極大，是白馬最友善初學者的雪場；中級林道長，住宿價格相對親民。",
+      "trailMap": {
+        "thumb": "assets/maps/tsugaike-thumb.webp",
+        "full": "assets/maps/tsugaike.webp",
+        "width": 1527,
+        "height": 1077
+      },
+      "location": {
+        "mapQuery": "栂池高原スキー場",
+        "address": "長野県北安曇郡小谷村栂池高原12840-1",
+        "lat": 36.763,
+        "lng": 137.844,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
+      }
+    },
+    {
+      "id": "kashimayari",
+      "name": "鹿島槍",
+      "nameEn": "Kashimayari Snow Resort Family Park (Sun Alpina)",
+      "skiresortUrl": "https://www.skiresort.com/en/ski-resort/sun-alpina-kashimayari/",
+      "officialUrl": "https://www.kashimayari.net/snow/",
+      "elevation": {
+        "base": 830,
+        "top": 1550,
+        "vertical": 720
+      },
+      "lifts": {
+        "total": 8,
+        "gondola": 0,
+        "chairlifts": 8,
+        "capacityPerHour": null,
+        "capacityStatus": "unknown",
+        "mainLift": {
+          "name": "第 1 / 第 6 四人吊椅",
+          "lengthM": 960,
+          "capacityPerHour": null,
+          "note": "雪場地圖顯示營運中 5 條：No.1、2、5、6、7"
+        }
+      },
+      "slopes": {
+        "totalKm": 15.9,
+        "runs": 12,
+        "ratio": {
+          "beginner": 40,
+          "intermediate": 45,
+          "advanced": 15
+        },
+        "km": {
+          "beginner": 6.4,
+          "intermediate": 7.2,
+          "advanced": 2.4,
+          "status": "estimate"
+        },
+        "longestKm": 4.1
+      },
+      "ticket": {
+        "adult1Day": 5900,
+        "season": "2025-26 大人 1 日券",
+        "url": "https://www.kashimayari.net/snow/"
+      },
+      "access": {
+        "fromHakubaStationMin": 30,
+        "fromNaganoBusMin": null,
+        "naganoBusStop": "無長野直達；JR 大糸線 簗場站或自駕",
+        "notes": "位於大町市，白馬谷最南；Hakuba Valley 接駁巴士班次較少"
+      },
+      "lodging": {
+        "areas": [
+          "鹿島槍山腳（Central Plaza 1130 Alpen Inn）",
+          "中綱湖 B&B"
+        ],
+        "distanceToLift": "山腳酒店 ski-in/out；中綱區步行至 CAMP1",
+        "priceRangePerRoomNight": [
+          10000,
+          28000
+        ],
+        "priceStatus": "estimate",
+        "links": {
+          "booking": "https://www.booking.com/searchresults.html?ss=Kashimayari",
+          "googleHotels": "https://www.google.com/travel/search?q=Kashimayari%20hotels"
+        }
+      },
+      "beginnerScore": 5,
+      "summary": "初中級佔 85%，雪票最平、人少、有寶可夢兒童區，家庭首選；缺點是距白馬村中心遠、高級道少。",
+      "trailMap": {
+        "thumb": "assets/maps/kashimayari-thumb.webp",
+        "full": "assets/maps/kashimayari.webp",
+        "width": 1519,
+        "height": 1077
+      },
+      "location": {
+        "mapQuery": "鹿島槍スキー場ファミリーパーク",
+        "address": "長野県大町市平黒沢高原",
+        "lat": 36.5965,
+        "lng": 137.8215,
+        "coordStatus": "estimate",
+        "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%A7%8D%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4%E3%83%95%E3%82%A1%E3%83%9F%E3%83%AA%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AF"
+      }
+    }
+  ]
+}
