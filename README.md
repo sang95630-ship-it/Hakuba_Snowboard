@@ -1,7 +1,7 @@
 # Hakuba Snowboard — 白馬 5 大雪場比較
 
 > 目標：整合白馬谷（Hakuba Valley）五個雪場的索道、雪道、雪票、交通及住宿數據，之後製作成 GitHub Pages 比較網站。
-> 結構化數據：[`data/resorts.json`](data/resorts.json)　｜　雪場地圖：[`assets/maps/`](assets/maps/)
+> 結構化數據：[`data/resorts.json`](data/resorts.json)　｜　雪場地圖：[`assets/maps/`](assets/maps/)　｜　網站規劃：[`docs/site-plan.md`](docs/site-plan.md)（結構參考 [ZhangJiaJie](https://github.com/sang95630-ship-it/ZhangJiaJie)）
 > 資料整理日期：2026-09-29（雪票為 2025-26 季價格，2026-27 季公佈後需更新）
 
 | 雪場 | skiresort | 官網 | 地圖 |
@@ -123,4 +123,4 @@
 - [ ] 2026-27 季各雪場 1 日券公佈後更新
 - [ ] 補齊五竜 & 47、鹿島槍的總運力
 - [ ] 核對岩岳雪道總長（50 km vs 125 ha）
-- [ ] 以 `data/resorts.json` 建立 GitHub Pages 比較網站
+- [ ] 以 `data/resorts.json` 建立 GitHub Pages 比較網站（沿用 ZhangJiaJie 單頁框架，見 `docs/site-plan.md`）
