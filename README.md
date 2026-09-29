@@ -12,7 +12,8 @@
 - **本地預覽**：在專案資料夾執行 `python3 -m http.server`，開啟 <http://localhost:8000>（直接雙擊 `index.html` 會因瀏覽器安全限制讀不到 JSON）
 - **上線**：GitHub → Settings → Pages → 選擇分支與 `/ (root)`
 - **更新數據**：只需修改 `data/resorts.json`，網頁自動更新
-- **測試**：`node tests/site.test.js`（Playwright，216 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
+- **核對費用**：[`docs/cost-fact-check.md`](docs/cost-fact-check.md)（逐項清單 + 官方連結）
+- **測試**：`node tests/site.test.js`（Playwright，278 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
 
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
@@ -74,7 +75,7 @@
 | 八方尾根 | ¥8,400 | 旺季 12/20–3/15；春季 ¥5,500 |
 | 五竜 & 47 | **¥9,500** | 窗口價；網購 ¥9,000；淡季 ¥7,000 起 |
 | 岩岳 | ¥7,000 | 早鳥 ¥5,700 |
-| 栂池 | ¥8,200 | 早鳥 ¥5,900 |
+| 栂池 | **¥6,500** ✓ | 2026-27 早鳥價（不可取消，截止購買 2026-11-30）；可取消版 ¥7,280；2025-26 正價 ¥8,200 |
 | 鹿島槍 | **¥5,900** | 另有家庭套票 |
 | Hakuba Valley 全山通票 | ¥10,400 → **¥11,100（2026-27）** | 10 個雪場通用 + 當日接駁巴士 |
 
@@ -118,16 +119,37 @@
 - 想「一次住、多場滑」：住 **八方 / Echoland**（交通樞紐，接駁巴士最密集）。
 - 以初學為主：住 **栂池**（ski-in/out + 最佳初級坡 + 價格較低）。
 
-## 6. 交通費（每人單程，2025-26 參考）
+## 6. 交通費（每人單程）
+
+✓ = 用戶 2026-09 人手核實
 
 | 路線 | 票價 | 時間 |
 |---|---:|---|
-| 北陸新幹線 東京 → 長野（指定席） | ¥8,000–9,500 | 80–100 分 |
-| Alpico 特急巴士 長野 → 白馬 | ¥2,200–2,400 | 60–90 分 |
-| **小計：經長野** | **≈ ¥10,800** | 約 2.5–3 小時 |
+| ✓ 成田特快 N'EX 成田機場 → 東京站（14 日來回 ¥5,200） | ¥2,600 | 約 60 分 |
+| ✓ 北陸新幹線 東京 → 長野 | ¥9,000 | 80–100 分 |
+| ✓ Alpico 特急巴士 長野 → 白馬 | ¥3,500 | 60–90 分 |
+| **✓ 小計：成田 → 白馬（網站預算預設）** | **¥15,100** | 約 4–4.5 小時 |
+| 小計：東京 → 白馬（經長野） | ¥12,500 | 約 2.5–3 小時 |
 | 高速巴士 新宿 → 白馬（直達，動態票價） | ¥6,400–7,800 | 4.5–5 小時 |
 | Nagano Snow Shuttle 成田 / 羽田 → 白馬 | ≈ ¥11,000 | 約 5 小時 |
 | Hakuba Valley 谷內接駁巴士 | ¥800 / 程（持全山通票免費） | — |
+
+- 來源：[N'EX](https://www.jreast.co.jp/zh-CHT/multi/nex/)・[Alpico 長野 ⇆ 白馬（冬季）](https://visit-nagano.alpico.co.jp/zh-hant/timetable/hakuba-nagano-winter)
+- 匯率：1 JPY = **0.0498** HKD（用戶 2026-09 提供）
+
+## 6b. 已核實價格（用戶 2026-09）
+
+| 雪場 | 項目 | 價格 | 備註 | 來源 |
+|---|---|---:|---|---|
+| 栂池 | 早鳥 1 日券（可取消） | ¥7,280 | 截止購買 2026-11-30 | [連結](https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html) |
+| 栂池 | 早鳥 1 日券（不可取消） | ¥6,500 | 截止購買 2026-11-30 | [連結](https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html) |
+| 栂池 | 雪場租借 標準雪板套裝 4 日 | ¥16,000 | ⚠ 2022-23 季價目表 | [PDF](https://www.tsugaike.gr.jp/winter/wp-content/uploads/2022/12/tsugaike2022-23.pdf) |
+| 栂池 | 直達小屋（Airbnb，2 人 5 晚） | HK$9,157 | 2027-03-03 至 03-08 | [連結](https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-03&check_out=2027-03-08) |
+| 栂池 | 其他住宿（每晚約 HK$1,300 × 5） | HK$6,500 | 用戶估算 | — |
+| 五竜 & 47 | 1 日券（首次購票價） | ¥9,500 | 可能含 IC 卡押金 | [連結](https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html) |
+| 五竜 & 47 | 3 日券（首次購票價） | ¥25,000 | 每日約 ¥8,333 | [連結](https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html) |
+| 岩岳 | KKday 3 日套票 | HK$1,745 | ⚠ 可能含裝備租借 | [KKday](https://www.kkday.com/zh-hk/product/259382-hakuba-iwatake-ski-resort-lift-ticket-nagano-japan) |
+| 岩岳 | KKday 2 日套票 | HK$1,206 | ⚠ 可能含裝備租借 | [KKday](https://www.kkday.com/zh-hk/product/259382-hakuba-iwatake-ski-resort-lift-ticket-nagano-japan) |
 
 - Alpico 2025-26 季**停辦**成田機場直達巴士，機場直達只剩 Nagano Snow Shuttle 或包車。
 

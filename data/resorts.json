@@ -9,7 +9,8 @@
       "雪道公里數分佈 = 總長 × 官方初/中/高比例，屬推算值。",
       "住宿價格為旺季（1–2 月）每房每晚參考區間，須以訂房網站即時報價為準。",
       "雪場地圖：thumb（1200px，頁面顯示）/ full（1917px 原解像度，燈箱放大檢視）。",
-      "location.lat/lng 為估算座標（誤差可達數百米），只用於地圖標記位置；googleMapsUrl 以雪場日文正式名稱搜尋，點擊後由 Google Maps 定位。上線前請在 Google Maps 右鍵複製座標核對。"
+      "location.lat/lng 為估算座標（誤差可達數百米），只用於地圖標記位置；googleMapsUrl 以雪場日文正式名稱搜尋，點擊後由 Google Maps 定位。上線前請在 Google Maps 右鍵複製座標核對。",
+      "標示「已核實」的價格由用戶於 2026-09 人手核對，來源連結見雪場卡背面「已核實價格」。"
     ],
     "valleyPass": {
       "name": "Hakuba Valley All-Mountain Day Pass",
@@ -20,9 +21,9 @@
     },
     "exchangeRate": {
       "pair": "JPY/HKD",
-      "rate": 0.052,
-      "rateDate": "2025 參考值",
-      "status": "estimate",
+      "rate": 0.0498,
+      "rateDate": "2026-09 用戶提供",
+      "status": "verified",
       "api": "https://open.er-api.com/v6/latest/JPY",
       "note": "頁面載入時嘗試取得即時匯率；失敗則用此後備值。用戶可在預算試算內手動修改。"
     },
@@ -31,22 +32,38 @@
       "status": "2025-26 季參考價，每人單程；2026-27 季公佈後更新",
       "transport": [
         {
+          "id": "narita-nex",
+          "name": "成田特快 N'EX 成田機場 → 東京站（14 日來回票 ¥5,200 ÷ 2）",
+          "min": 2600,
+          "max": 2600,
+          "typical": 2600,
+          "roundTrip": 5200,
+          "durationMin": "約 60",
+          "status": "verified",
+          "checked": "2026-09 用戶核實",
+          "url": "https://www.jreast.co.jp/zh-CHT/multi/nex/"
+        },
+        {
           "id": "shinkansen",
-          "name": "北陸新幹線 東京 → 長野（指定席）",
-          "min": 8000,
-          "max": 9500,
-          "typical": 8500,
+          "name": "北陸新幹線 東京 → 長野",
+          "min": 9000,
+          "max": 9000,
+          "typical": 9000,
           "durationMin": "80–100",
-          "url": "https://www.eki-net.com/"
+          "url": "https://www.eki-net.com/",
+          "status": "verified",
+          "checked": "2026-09 用戶核實"
         },
         {
           "id": "nagano-bus",
           "name": "Alpico 特急巴士 長野 → 白馬",
-          "min": 2200,
-          "max": 2400,
-          "typical": 2300,
+          "min": 3500,
+          "max": 3500,
+          "typical": 3500,
           "durationMin": "60–90",
-          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-nagano-winter-reserved"
+          "url": "https://visit-nagano.alpico.co.jp/zh-hant/timetable/hakuba-nagano-winter",
+          "status": "verified",
+          "checked": "2026-09 用戶核實"
         },
         {
           "id": "shinjuku-bus",
@@ -55,7 +72,8 @@
           "max": 7800,
           "typical": 7000,
           "durationMin": "270–300",
-          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-shinjuku-winter"
+          "url": "https://visit-nagano.alpico.co.jp/timetable/hakuba-shinjuku-winter",
+          "status": "estimate"
         },
         {
           "id": "airport-shuttle",
@@ -64,18 +82,32 @@
           "max": 11000,
           "typical": 11000,
           "durationMin": "約 300",
-          "url": "https://naganosnowshuttle.com/destinations/hakuba-valley/"
+          "url": "https://naganosnowshuttle.com/destinations/hakuba-valley/",
+          "status": "estimate"
         }
       ],
       "transportPackages": [
         {
+          "id": "narita-rail",
+          "name": "成田機場 → N'EX → 新幹線 → 長野 → 巴士 → 白馬",
+          "legs": [
+            "narita-nex",
+            "shinkansen",
+            "nagano-bus"
+          ],
+          "typical": 15100,
+          "status": "verified",
+          "default": true
+        },
+        {
           "id": "airport",
-          "name": "機場直達接駁",
+          "name": "機場直達接駁（Nagano Snow Shuttle）",
           "legs": [
             "airport-shuttle"
           ],
           "typical": 11000,
-          "default": true
+          "default": false,
+          "status": "estimate"
         },
         {
           "id": "via-nagano",
@@ -84,8 +116,9 @@
             "shinkansen",
             "nagano-bus"
           ],
-          "typical": 10800,
-          "default": false
+          "typical": 12500,
+          "default": false,
+          "status": "verified"
         },
         {
           "id": "direct-bus",
@@ -94,7 +127,8 @@
             "shinjuku-bus"
           ],
           "typical": 7000,
-          "default": false
+          "default": false,
+          "status": "estimate"
         }
       ],
       "localTransport": {
@@ -151,7 +185,7 @@
           }
         ]
       },
-      "defaultTransportPackage": "airport"
+      "defaultTransportPackage": "narita-rail"
     }
   },
   "resorts": [
@@ -199,7 +233,8 @@
         "adult1Day": 8400,
         "season": "2025-26 旺季 (12/20–3/15)",
         "spring": 5500,
-        "url": "https://www.happo-one.jp/en/ticket/"
+        "url": "https://www.happo-one.jp/en/ticket/",
+        "status": "estimate"
       },
       "access": {
         "fromHakubaStationMin": 5,
@@ -239,7 +274,8 @@
         "lng": 137.8385,
         "coordStatus": "estimate",
         "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%85%AB%E6%96%B9%E5%B0%BE%E6%A0%B9%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
-      }
+      },
+      "checkedPrices": []
     },
     {
       "id": "goryu-47",
@@ -283,8 +319,10 @@
       },
       "ticket": {
         "adult1Day": 9500,
-        "season": "2025-26 旺季窗口價（網購 ¥9,000；淡季 ¥7,000 起）",
-        "url": "https://www.hakubaescal.com/winter-en/tickets/lift/"
+        "season": "2025-26 首次購票價（網購 ¥9,000；淡季 ¥7,000 起）",
+        "url": "https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html",
+        "status": "verified",
+        "checked": "2026-09 用戶核實"
       },
       "access": {
         "fromHakubaStationMin": 10,
@@ -323,7 +361,29 @@
         "lng": 137.833,
         "coordStatus": "estimate",
         "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%82%A4%E3%83%96%E3%83%AB%E7%99%BD%E9%A6%AC%E4%BA%94%E7%AB%9C"
-      }
+      },
+      "checkedPrices": [
+        {
+          "category": "雪票",
+          "item": "1 日券（首次購票價）",
+          "price": 9500,
+          "currency": "JPY",
+          "cancellable": false,
+          "url": "https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html",
+          "checked": "2026-09 用戶核實",
+          "note": "首次購票價可能已包括 IC 卡押金，請於官網確認"
+        },
+        {
+          "category": "雪票",
+          "item": "3 日券（首次購票價）",
+          "price": 25000,
+          "currency": "JPY",
+          "cancellable": false,
+          "url": "https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html",
+          "checked": "2026-09 用戶核實",
+          "note": "折合每日約 ¥8,333，比 1 日券 × 3 平 ¥3,500"
+        }
+      ]
     },
     {
       "id": "iwatake",
@@ -368,7 +428,8 @@
       "ticket": {
         "adult1Day": 7000,
         "season": "2025-26 大人 1 日券（早鳥 ¥5,700）",
-        "url": "https://iwatake-mountain-resort.com/winter/rates"
+        "url": "https://iwatake-mountain-resort.com/winter/rates",
+        "status": "estimate"
       },
       "access": {
         "fromHakubaStationMin": 10,
@@ -407,7 +468,29 @@
         "lng": 137.8525,
         "coordStatus": "estimate",
         "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E9%A6%AC%E5%B2%A9%E5%B2%B3%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%86%E3%83%B3%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88"
-      }
+      },
+      "checkedPrices": [
+        {
+          "category": "雪票",
+          "item": "KKday 3 日套票",
+          "price": 1745,
+          "currency": "HKD",
+          "cancellable": false,
+          "url": "https://www.kkday.com/zh-hk/product/259382-hakuba-iwatake-ski-resort-lift-ticket-nagano-japan",
+          "checked": "2026-09 用戶核實",
+          "note": "KKday 產品名為「纜車票及裝備租借」，價格可能已含裝備租借，請於頁面確認所選方案"
+        },
+        {
+          "category": "雪票",
+          "item": "KKday 2 日套票",
+          "price": 1206,
+          "currency": "HKD",
+          "cancellable": false,
+          "url": "https://www.kkday.com/zh-hk/product/259382-hakuba-iwatake-ski-resort-lift-ticket-nagano-japan",
+          "checked": "2026-09 用戶核實",
+          "note": "同上，可能已含裝備租借"
+        }
+      ]
     },
     {
       "id": "tsugaike",
@@ -450,9 +533,14 @@
         "longestKm": 4.6
       },
       "ticket": {
-        "adult1Day": 8200,
-        "season": "2025-26 大人 1 日券（早鳥 ¥5,900）",
-        "url": "https://www.tsugaike.gr.jp/"
+        "adult1Day": 6500,
+        "season": "2026-27 早鳥 1 日券（不可取消，截止購買 2026-11-30）；可取消版 ¥7,280；2025-26 正價 ¥8,200",
+        "url": "https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html",
+        "status": "verified",
+        "regular2025_26": 8200,
+        "checked": "2026-09 用戶核實",
+        "priceType": "early-bird",
+        "purchaseBy": "2026-11-30"
       },
       "access": {
         "fromHakubaStationMin": 20,
@@ -466,14 +554,15 @@
         ],
         "distanceToLift": "高原村落步行 0–10 分鐘（ski-in/out 選擇多）",
         "priceRangePerRoomNight": [
-          10000,
-          30000
+          26000,
+          37000
         ],
-        "priceStatus": "estimate",
+        "priceStatus": "verified",
         "links": {
           "booking": "https://www.booking.com/searchresults.html?ss=Tsugaike+Kogen",
           "googleHotels": "https://www.google.com/travel/search?q=Tsugaike%20Kogen%20hotels"
-        }
+        },
+        "priceNote": "按用戶核實：一般住宿每晚約 HK$1,300（≈¥26,000）、直達小屋每晚約 HK$1,831（≈¥37,000），2027-03 入住，匯率 0.0498"
       },
       "beginnerScore": 5,
       "summary": "山腳「鐘の鳴る丘」平均坡度約 8°、寬度極大，是白馬最友善初學者的雪場；中級林道長，住宿價格相對親民。",
@@ -490,7 +579,59 @@
         "lng": 137.844,
         "coordStatus": "estimate",
         "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A0%82%E6%B1%A0%E9%AB%98%E5%8E%9F%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4"
-      }
+      },
+      "checkedPrices": [
+        {
+          "category": "雪票",
+          "item": "早鳥 1 日券（可取消）",
+          "price": 7280,
+          "currency": "JPY",
+          "cancellable": true,
+          "purchaseBy": "2026-11-30",
+          "url": "https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html",
+          "checked": "2026-09 用戶核實"
+        },
+        {
+          "category": "雪票",
+          "item": "早鳥 1 日券（不可取消）",
+          "price": 6500,
+          "currency": "JPY",
+          "cancellable": false,
+          "purchaseBy": "2026-11-30",
+          "url": "https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html",
+          "checked": "2026-09 用戶核實"
+        },
+        {
+          "category": "租借",
+          "item": "雪場租借 標準雪板套裝 4 日",
+          "price": 16000,
+          "currency": "JPY",
+          "cancellable": false,
+          "url": "https://www.tsugaike.gr.jp/winter/wp-content/uploads/2022/12/tsugaike2022-23.pdf",
+          "checked": "2026-09 用戶核實",
+          "note": "來源為 2022-23 季價目表，2026-27 季價格可能已調整；折合每日 ¥4,000"
+        },
+        {
+          "category": "住宿",
+          "item": "栂池直達小屋（Airbnb，2 人 5 晚總價）",
+          "price": 9157,
+          "currency": "HKD",
+          "cancellable": false,
+          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-03&check_out=2027-03-08",
+          "checked": "2026-09 用戶核實",
+          "note": "2027-03-03 至 03-08；每晚約 HK$1,831"
+        },
+        {
+          "category": "住宿",
+          "item": "栂池其他住宿（每晚約 HK$1,300 × 5 晚）",
+          "price": 6500,
+          "currency": "HKD",
+          "cancellable": false,
+          "url": null,
+          "checked": "2026-09 用戶核實",
+          "note": "用戶估算"
+        }
+      ]
     },
     {
       "id": "kashimayari",
@@ -535,7 +676,8 @@
       "ticket": {
         "adult1Day": 5900,
         "season": "2025-26 大人 1 日券",
-        "url": "https://www.kashimayari.net/snow/"
+        "url": "https://www.kashimayari.net/snow/",
+        "status": "estimate"
       },
       "access": {
         "fromHakubaStationMin": 30,
@@ -574,7 +716,8 @@
         "lng": 137.8215,
         "coordStatus": "estimate",
         "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%A7%8D%E3%82%B9%E3%82%AD%E3%83%BC%E5%A0%B4%E3%83%95%E3%82%A1%E3%83%9F%E3%83%AA%E3%83%BC%E3%83%91%E3%83%BC%E3%82%AF"
-      }
+      },
+      "checkedPrices": []
     }
   ]
 }
