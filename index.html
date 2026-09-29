@@ -119,6 +119,21 @@ h1,h2,h3{font-family:var(--font-display);line-height:1.2}
   font-size:.7rem;font-weight:600;vertical-align:.1em;white-space:nowrap;font-family:var(--font-body)}
 .tag-est{background:var(--color-warn-bg);color:var(--color-warn)}
 .tag-unk{background:var(--color-surface-offset);color:var(--color-text-muted)}
+.tag-ok{display:inline-block;margin-left:.3rem;padding:0 .45rem;border-radius:var(--radius-full);font-size:.7rem;font-weight:600;vertical-align:.1em;white-space:nowrap;font-family:var(--font-body);
+  background:color-mix(in srgb,var(--lv-beginner) 16%,transparent);color:var(--lv-beginner)}
+.checked-list{list-style:none;display:grid;gap:.5rem;margin-top:.3rem}
+.checked-list li{display:grid;grid-template-columns:1fr auto;gap:.1rem .6rem;padding-top:.5rem;border-top:1px dashed var(--color-divider)}
+.checked-list li:first-child{border-top:none;padding-top:0}
+.checked-list .ci-item{font-size:var(--text-sm)}
+.checked-list .ci-cat{display:inline-block;margin-right:.3rem;padding:0 .4rem;border-radius:var(--radius-sm);font-size:.68rem;font-weight:700;background:var(--color-surface-offset);color:var(--color-text-muted);vertical-align:.1em}
+.checked-list .ci-price{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--text-sm);white-space:nowrap}
+.checked-list .ci-meta{grid-column:1/-1;font-size:var(--text-xs);color:var(--color-text-muted)}
+.checked-list .ci-meta a{font-weight:600}
+.checked-list .ci-warn{color:var(--color-warn)}
+.checked-list + .hint{margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--color-divider)}
+.leg-list{list-style:none;display:grid;gap:.3rem;font-size:var(--text-xs);color:var(--color-text-muted)}
+.leg-list li{display:flex;flex-wrap:wrap;gap:.2rem .5rem;align-items:baseline}
+.leg-list strong{color:var(--color-text);font-variant-numeric:tabular-nums}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1rem;border-radius:var(--radius-full);
   font-size:var(--text-sm);font-weight:600;text-decoration:none;background:var(--color-primary);color:var(--color-text-inverse);
   transition:background .18s;min-height:40px}
@@ -427,6 +442,7 @@ const hkd = (n, rate) => 'HK$' + fmtInt(n * rate);
 const orDash = (v, f = x => x) => isNum(v) ? f(v) : '—';
 const tagEst = '<span class="tag-est" title="依比例或類型推算，非官方數字">估算</span>';
 const tagUnk = '<span class="tag-unk">未公開</span>';
+const tagOk = '<span class="tag-ok" title="用戶已人手核對官方或訂購頁面">✓ 已核實</span>';
 const extLink = (url, label, cls = 'btn btn-ghost') =>
   `<a class="${cls}" href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
 const store = {
@@ -490,7 +506,7 @@ function render(data){
     heroHTML(R, meta),
     locationHTML(byNorth),
     compareHTML(),
-    resortsHTML(R),
+    resortsHTML(R, meta),
     budgetHTML(R, meta),
     stayHTML(R),
     notesHTML(meta)
@@ -591,7 +607,7 @@ function locationHTML(list){
 /* ----- COMPARE ----- */
 const COLS = [
   { key: 'name', label: '雪場', get: r => r.name, fmt: (v, r) => `<a href="#card-${esc(r.id)}">${esc(v)}</a>`, text: true },
-  { key: 'ticket', label: '1 日券', get: r => r.ticket.adult1Day, fmt: v => yen(v), best: 'min' },
+  { key: 'ticket', label: '1 日券', get: r => r.ticket.adult1Day, fmt: (v, r) => yen(v) + (r.ticket.status === 'verified' ? ' <span class="tag-ok" title="已核實">✓</span>' : ''), best: 'min' },
   { key: 'km', label: '雪道長度', get: r => r.slopes.totalKm, fmt: v => v + ' km', best: 'max' },
   { key: 'runs', label: '雪道數', get: r => r.slopes.runs, fmt: v => v, best: 'max' },
   { key: 'begint', label: '初+中級', get: r => r.slopes.ratio.beginner + r.slopes.ratio.intermediate, fmt: v => v + '%', best: 'max' },
@@ -670,16 +686,17 @@ function initCompare(R){
 }
 
 /* ----- RESORT CARDS ----- */
-function resortsHTML(R){
+function resortsHTML(R, meta){
   return `
 <section class="section" id="resorts">
   <div class="container">
     <div class="section-head"><h2>雪場詳情</h2><p>正面看索道與雪道數據；按「雪票・交通・住宿」翻到背面查看價格與連結。</p></div>
-    <div class="resort-grid">${R.map((r, i) => cardHTML(r, i)).join('')}</div>
+    <div class="resort-grid">${R.map((r, i) => cardHTML(r, i, meta)).join('')}</div>
   </div>
 </section>`;
 }
-function cardHTML(r, i){
+function cardHTML(r, i, meta){
+  const rate = meta.exchangeRate.rate;
   const s = r.slopes, l = r.lifts, e = r.elevation;
   const kmEst = s.km.status === 'estimate' ? tagEst : '';
   const cap = isNum(l.capacityPerHour) ? fmtInt(l.capacityPerHour) + ' 人/時' + (l.capacityStatus === 'estimate' ? tagEst : '') : tagUnk;
@@ -723,17 +740,19 @@ function cardHTML(r, i){
         <div><h3>${esc(r.name)}</h3><small>雪票・交通・住宿</small></div>
         <button class="flip-btn" type="button" data-flip="close" aria-controls="card-${esc(r.id)}">← 返回</button>
       </div>
-      <div class="info-box"><div class="label">雪票</div>
-        <p><strong>${yen(r.ticket.adult1Day)}</strong> · ${esc(r.ticket.season)}</p>
+      <div class="info-box"><div class="label">雪票 ${r.ticket.status === 'verified' ? tagOk : ''}</div>
+        <p><strong>${yen(r.ticket.adult1Day)}</strong>（≈ ${hkd(r.ticket.adult1Day, rate)}）· ${esc(r.ticket.season)}</p>
         ${isNum(r.ticket.spring) ? `<p class="hint">春季 1 日券 ${yen(r.ticket.spring)}</p>` : ''}</div>
       <div class="info-box"><div class="label">交通</div>
         <p>白馬站車程約 ${orDash(r.access.fromHakubaStationMin, v => v + ' 分鐘')}</p>
         <p>長野巴士：${isNum(r.access.fromNaganoBusMin) ? '約 ' + r.access.fromNaganoBusMin + ' 分鐘 · ' : ''}${esc(r.access.naganoBusStop)}</p>
         <p class="hint">${esc(r.access.notes)}</p></div>
-      <div class="info-box"><div class="label">住宿 ${r.lodging.priceStatus === 'estimate' ? tagEst : ''}</div>
+      <div class="info-box"><div class="label">住宿 ${r.lodging.priceStatus === 'verified' ? tagOk : tagEst}</div>
         <p>${esc(r.lodging.areas.join('、'))}</p>
         <p>與索道：${esc(r.lodging.distanceToLift)}</p>
-        <p>旺季每房每晚約 <strong>${yen(pMin)}–${yen(pMax)}</strong></p></div>
+        <p>旺季每房每晚約 <strong>${yen(pMin)}–${yen(pMax)}</strong>（≈ ${hkd(pMin, rate)}–${hkd(pMax, rate)}）</p>
+        ${r.lodging.priceNote ? `<p class="hint">${esc(r.lodging.priceNote)}</p>` : ''}</div>
+      ${checkedHTML(r.checkedPrices, rate)}
       <div class="info-box"><div class="label">地址</div><p>${esc(r.location.address)}</p></div>
       <div class="link-row">
         ${extLink(r.ticket.url, '雪票官網', 'btn')}
@@ -745,6 +764,24 @@ function cardHTML(r, i){
     </div>
   </div>
 </article>`;
+}
+function checkedHTML(list, rate){
+  if (!list || !list.length) return '';
+  const price = it => it.currency === 'HKD'
+    ? `HK$${fmtInt(it.price)}<br><small>≈ ${yen(it.price / rate)}</small>`
+    : `${yen(it.price)}<br><small>≈ ${hkd(it.price, rate)}</small>`;
+  return `<div class="info-box"><div class="label">已核實價格 ${tagOk}</div>
+    <ul class="checked-list">${list.map(it => {
+      const meta = [
+        it.cancellable ? '可取消' : '',
+        it.purchaseBy ? `截止購買 ${esc(it.purchaseBy)}` : '',
+        it.note ? `<span class="${/2022-23|可能已含|請於/.test(it.note) ? 'ci-warn' : ''}">${esc(it.note)}</span>` : '',
+        it.url ? `<a href="${esc(safeUrl(it.url))}" target="_blank" rel="noopener noreferrer">來源 ↗</a>` : '<span>（無連結）</span>'
+      ].filter(Boolean).join(' · ');
+      return `<li><span class="ci-item"><span class="ci-cat">${esc(it.category)}</span>${esc(it.item)}</span>
+        <span class="ci-price">${price(it)}</span><span class="ci-meta">${meta}</span></li>`;
+    }).join('')}</ul>
+    <p class="hint">按 1 JPY = ${rate} HKD 換算 · ${esc(list[0].checked || '')}</p></div>`;
 }
 function initFlip(){
   $$('.flip').forEach(card => {
@@ -775,7 +812,7 @@ function budgetHTML(R, meta){
   return `
 <section class="section" id="budget">
   <div class="container">
-    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設 2 人、5 天滑雪、住 5 晚、由成田 / 羽田機場出發。</p></div>
+    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設 2 人、5 天滑雪、住 5 晚、由成田機場乘鐵路 + 巴士出發（已核實價格）。</p></div>
     <div class="budget-grid">
       <form class="card budget-form" id="budgetForm" novalidate>
         <fieldset>
@@ -807,9 +844,10 @@ function budgetHTML(R, meta){
         <fieldset>
           <legend>交通</legend>
           <div class="field-row">
-            <div class="field"><label for="bRoute">往返白馬路線</label><select id="bRoute">${c.transportPackages.map(p => `<option value="${esc(p.id)}"${p.id === c.defaultTransportPackage ? ' selected' : ''}>${esc(p.name)}（${yen(p.typical)}／程）</option>`).join('')}</select></div>
+            <div class="field"><label for="bRoute">往返白馬路線</label><select id="bRoute">${c.transportPackages.map(p => `<option value="${esc(p.id)}"${p.id === c.defaultTransportPackage ? ' selected' : ''}>${esc(p.name)}（${yen(p.typical)}／程${p.status === 'verified' ? '・已核實' : '・估算'}）</option>`).join('')}</select></div>
             <div class="field"><label for="bShuttle">谷內接駁巴士（每日程數）</label><input id="bShuttle" type="number" min="0" max="10" step="1" value="2" inputmode="numeric"></div>
           </div>
+          <ul class="leg-list" id="legList"></ul>
           <p class="hint">接駁巴士 ${yen(c.localTransport.valleyShuttle.perRide)}／程；持全山通票當日免費。單場雪票是否免費乘搭，官方資料未明確，這裏按收費計。</p>
         </fieldset>
         <fieldset>
@@ -888,6 +926,8 @@ function initBudget(R, meta){
     const rateOk = Number.isFinite(rate) && rate > 0;
     if (!rateOk) rate = meta.exchangeRate.rate;
     const pkg = c.transportPackages.find(p => p.id === el('bRoute').value) || c.transportPackages[0];
+    const legs = (pkg.legs || []).map(id => c.transport.find(t => t.id === id)).filter(Boolean);
+    el('legList').innerHTML = legs.map(t => `<li><span>${esc(t.name)}</span><strong>${yen(t.typical)}</strong>${t.status === 'verified' ? tagOk : tagEst}${t.url ? `<a href="${esc(safeUrl(t.url))}" target="_blank" rel="noopener noreferrer">來源 ↗</a>` : ''}</li>`).join('');
 
     const choices = dayChoices.slice(0, days);
     const ticketPerPerson = choices.reduce((s, id) => s + (id === 'valley' ? VALLEY : byId[id].ticket.adult1Day), 0);

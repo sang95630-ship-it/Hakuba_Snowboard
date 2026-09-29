@@ -55,7 +55,8 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   data.resorts.forEach((r, i) => {
     const row = rows[i];
     eq(row[0], r.name, `第 ${i + 1} 行名稱`);
-    eq(row[1], yen(r.ticket.adult1Day), `${r.name} 1 日券`);
+    eq(row[1].replace(/\s*✓$/, ''), yen(r.ticket.adult1Day), `${r.name} 1 日券`);
+    eq(row[1].endsWith('✓'), r.ticket.status === 'verified', `${r.name} 已核實標記`);
     eq(row[2], r.slopes.totalKm + ' km', `${r.name} 雪道長度`);
     eq(row[3], String(r.slopes.runs), `${r.name} 雪道數`);
     eq(row[4], (r.slopes.ratio.beginner + r.slopes.ratio.intermediate) + '%', `${r.name} 初+中`);
@@ -81,7 +82,7 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
 
   // ---------- 3. Sorting ----------
   console.log('\n[3] 表格排序');
-  const colVals = async n => page.$$eval(`#compareTable tbody tr > :nth-child(${n})`, c => c.map(x => x.textContent.trim()));
+  const colVals = async n => page.$$eval(`#compareTable tbody tr > :nth-child(${n})`, c => c.map(x => x.textContent.replace(/\s*✓$/, '').trim()));
   await page.click('[data-sort="ticket"]');
   eq(JSON.stringify(await colVals(2)), JSON.stringify(['¥5,900', '¥7,000', '¥8,200', '¥8,400', '¥9,500']), '1 日券升序');
   eq(await page.getAttribute('th:has([data-sort="ticket"])', 'aria-sort'), 'ascending', 'aria-sort ascending');
@@ -100,25 +101,33 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   // ---------- 4. Budget ----------
   console.log('\n[4] 預算試算');
   const total = async () => (await page.textContent('#totalJpy')).trim();
-  eq(await page.inputValue('#bRoute'), 'airport', '預設路線 = 機場');
-  eq(await page.inputValue('#bRoomPrice'), '20000', '預設房價 = 栂池中位數');
-  // default: 82,000 + 100,000 + 60,000 + 117,000 = 359,000
-  eq(await total(), '¥359,000', '預設總額');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$18,668', '預設總額 HKD（0.052）');
+  eq(await page.inputValue('#bRoute'), 'narita-rail', '預設路線 = 成田鐵路（已核實）');
+  eq(await page.inputValue('#bRate'), '0.0498', '預設匯率 0.0498');
+  eq(await page.inputValue('#bRoomPrice'), '32000', '預設房價 = 栂池核實範圍中位數');
+  // default: 82,000 + 160,000 + (60,400 + 16,000) + 117,000 = 435,400
+  eq(await total(), '¥435,400', '預設總額');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$21,683', '預設總額 HKD（0.0498）');
   ok((await page.textContent('#passAdvice')).includes('¥6,000'), '全山通票比較：目前便宜 ¥6,000');
   const resText = await page.textContent('#resultRows');
-  ok(resText.includes('¥82,000') && resText.includes('¥100,000') && resText.includes('¥60,000') && resText.includes('¥117,000'), '四項小計正確');
-  ok(resText.includes('每人平均 ¥179,500'), '每人平均');
+  ok(resText.includes('¥82,000') && resText.includes('¥160,000') && resText.includes('¥76,400') && resText.includes('¥117,000'), '四項小計正確');
+  ok(resText.includes('每人平均 ¥217,700'), '每人平均');
+  ok(resText.includes('往返 ¥15,100 × 2 程'), '交通按成田鐵路 ¥15,100／程');
+  eq(await page.locator('#legList li').count(), 3, '交通分段 3 段');
+  const legTxt = await page.textContent('#legList');
+  ok(legTxt.includes('¥2,600') && legTxt.includes('¥9,000') && legTxt.includes('¥3,500'), '分段價錢 2,600 / 9,000 / 3,500');
+  eq(await page.locator('#legList a').count(), 3, '分段均有來源連結');
+  await page.selectOption('#bRoute', 'airport');
+  ok((await page.textContent('#resultRows')).includes('往返 ¥11,000 × 2 程'), '切換機場接駁');
+  await page.selectOption('#bRoute', 'narita-rail');
 
   await page.fill('#bPeople', '3'); await page.dispatchEvent('#bPeople', 'input');
   eq(await page.inputValue('#bRooms'), '2', '3 人自動 2 房');
   eq(await page.inputValue('#bRentPeople'), '3', '租借人數跟隨');
-  // ticket 8200*5*3=123000; lodging 20000*2*5=200000; transport 11000*2*3=66000 + 800*2*5*3=24000 → 90000; rental (57500+1000)*3=175500
-  eq(await total(), yen(123000 + 200000 + 90000 + 175500), '3 人總額');
+  // ticket 8200*5*3; lodging 32000*2*5; transport 15100*2*3 + 800*2*5*3; rental (57500+1000)*3
+  eq(await total(), yen(123000 + 320000 + 90600 + 24000 + 175500), '3 人總額');
 
   await page.click('[data-fill="valley"]');
-  // ticket 10400*5*3=156000; shuttle 0 → transport 66000
-  eq(await total(), yen(156000 + 200000 + 66000 + 175500), '全山通票總額（接駁免費）');
+  eq(await total(), yen(156000 + 320000 + 90600 + 175500), '全山通票總額（接駁免費）');
   ok((await page.textContent('#passAdvice')).includes('已全部使用全山通票'), '全山通票提示');
 
   await page.fill('#bDays', '3'); await page.dispatchEvent('#bDays', 'input');
@@ -178,6 +187,37 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   // back face fully within card height (no clipping)
   const clip = await page.$$eval('.flip', cards => cards.map(c => { const i = c.querySelector('.flip-inner'); const b = c.querySelector('.face.back'); return b.scrollHeight <= i.clientHeight + 1; }));
   ok(clip.every(Boolean), '背面內容不被裁切');
+
+  // ---------- 5b. Checked prices on card back ----------
+  console.log('\n[5b] 卡背「已核實價格」');
+  for (const r of data.resorts) {
+    const cardEl = page.locator('#card-' + r.id);
+    const items = cardEl.locator('.face.back .checked-list li');
+    eq(await items.count(), (r.checkedPrices || []).length, `${r.name} 已核實項目數`);
+    for (let k = 0; k < (r.checkedPrices || []).length; k++) {
+      const it = r.checkedPrices[k];
+      const li = items.nth(k);
+      const txt = await li.textContent();
+      ok(txt.includes(it.item), `${r.name}：${it.item}`);
+      const priceTxt = it.currency === 'HKD' ? 'HK$' + it.price.toLocaleString('en-US') : yen(it.price);
+      ok(txt.includes(priceTxt), `  價格 ${priceTxt}`);
+      const conv = it.currency === 'HKD' ? yen(it.price / data.meta.exchangeRate.rate) : 'HK$' + Math.round(it.price * data.meta.exchangeRate.rate).toLocaleString('en-US');
+      ok(txt.includes(conv), `  換算 ${conv}`);
+      if (it.url) eq(await li.locator('a').getAttribute('href'), it.url, '  來源連結');
+      else ok(txt.includes('無連結'), '  無連結標示');
+      if (it.purchaseBy) ok(txt.includes(it.purchaseBy), '  截止日期');
+    }
+  }
+  const tsBack = page.locator('#card-tsugaike .face.back');
+  ok((await tsBack.textContent()).includes('2022-23'), '栂池租借標示 2022-23 舊價目表');
+  ok((await page.locator('#card-iwatake .face.back').textContent()).includes('可能已含裝備租借'), '岩岳 KKday 標示可能含租借');
+  ok((await page.locator('#card-goryu-47 .face.back .info-box').first().textContent()).includes('已核實'), '五竜雪票標示已核實');
+  await page.locator('#card-tsugaike [data-flip="open"]').click();
+  await page.waitForTimeout(800);
+  await page.locator('#card-tsugaike').screenshot({ path: path.join(SHOTS, 'tsugaike-back.png') });
+  const tsClip = await page.$eval('#card-tsugaike', c => c.querySelector('.face.back').scrollHeight <= c.querySelector('.flip-inner').clientHeight + 1);
+  ok(tsClip, '栂池卡背內容完整不被裁切');
+  await page.locator('#card-tsugaike [data-flip="close"]').click();
 
   // ---------- 6. Lightbox ----------
   console.log('\n[6] 燈箱放大');
@@ -382,7 +422,8 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   await page.goto(BASE); await page.waitForSelector('#compareTable tbody tr');
   await page.waitForFunction(() => document.getElementById('rateHint').textContent.includes('即時匯率'));
   eq(await page.inputValue('#bRate'), '0.0531', '即時匯率填入');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$' + Math.round(359000 * 0.0531).toLocaleString('en-US'), 'HKD 按即時匯率重算');
+  const jpyNow = +(await page.textContent('#totalJpy')).replace(/[^\d]/g, '');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$' + Math.round(jpyNow * 0.0531).toLocaleString('en-US'), 'HKD 按即時匯率重算');
   await page.route('https://open.er-api.com/**', r => r.fulfill({ contentType: 'application/json', body: '{"rates":{"HKD":"bad"}}' }));
   await page.reload(); await page.waitForSelector('#compareTable tbody tr');
   await page.waitForFunction(() => document.getElementById('rateHint').textContent.includes('未能'));
