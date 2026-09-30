@@ -45,9 +45,20 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.locator('.carousel-slide').count(), 5, '輪播 5 張');
   eq(await page.locator('.leaflet-marker-icon').count(), 5, 'Leaflet 標記 5 個');
   eq(await page.locator('.stay-card').count(), 5, '住宿卡 5 張');
-  for (const id of ['overview', 'location', 'compare', 'resorts', 'budget', 'stay', 'notes'])
+  for (const id of ['overview', 'flights', 'location', 'compare', 'resorts', 'budget', 'stay', 'notes'])
     ok(await page.locator('#' + id).count() === 1, `版塊 #${id} 存在`);
   eq(await page.title(), '白馬雪場比較', '頁面標題');
+
+  // ---------- 1b. Flights ----------
+  console.log('\n[1b] 航班');
+  const fl = data.meta.flights;
+  const ftxt = await page.textContent('#flights');
+  for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-02（二）', '2027-03-07（日）', 'HKG T1', 'NRT T1', 'HK$2,798', '已核實'])
+    ok(ftxt.includes(t), `航班資料含「${t}」`);
+  ok(ftxt.includes(yen(fl.priceHKD / data.meta.exchangeRate.rate)), '機票日圓換算');
+  ok(ftxt.includes('3/3–3/8'), '提示航班與住宿日期不一致');
+  ok(ftxt.includes('2026'), '註明年份推斷');
+  eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
 
   // ---------- 2. Data fidelity ----------
   console.log('\n[2] 數據核對（表格 vs JSON）');
@@ -104,15 +115,23 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRoute'), 'narita-rail', '預設路線 = 成田鐵路（已核實）');
   eq(await page.inputValue('#bRate'), '0.0498', '預設匯率 0.0498');
   eq(await page.inputValue('#bRoomPrice'), '32000', '預設房價 = 栂池核實範圍中位數');
-  // default: 65,000 + 160,000 + (60,400 + 16,000) + 117,000 = 418,400
-  eq(await total(), '¥418,400', '預設總額');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$20,836', '預設總額 HKD（0.0498）');
-  ok((await page.textContent('#passAdvice')).includes('¥23,000'), '全山通票比較：目前便宜 ¥23,000');
+  // default 2 人 4 日 5 晚: 52,000 + 160,000 + (60,400 + 12,800) + 94,000 + 機票 2×2798/0.0498
+  eq(await page.inputValue('#bDays'), '4', '預設滑雪 4 日（按航班）');
+  eq(await total(), yen(52000 + 160000 + 73200 + 94000 + 2 * 2798 / 0.0498), '預設總額（含機票）');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$24,480', '預設總額 HKD（0.0498）');
+  ok((await page.textContent('#passAdvice')).includes('¥18,400'), '全山通票比較：目前便宜 ¥18,400');
   ok((await page.textContent('#dayList')).includes('¥6,500 早鳥'), '每日選單標示栂池早鳥價');
   const resText = await page.textContent('#resultRows');
-  ok(resText.includes('¥65,000') && resText.includes('¥160,000') && resText.includes('¥76,400') && resText.includes('¥117,000'), '四項小計正確');
-  ok(resText.includes('每人平均 ¥209,200'), '每人平均');
-  ok(resText.includes('每人 ¥32,500'), '雪票每人 ¥6,500 × 5');
+  ok(resText.includes('¥52,000') && resText.includes('¥160,000') && resText.includes('¥73,200') && resText.includes('¥94,000'), '四項小計正確');
+  ok(resText.includes('HK$5,596') && resText.includes('HK$2,798 × 2 人'), '機票 HK$2,798 × 2 = HK$5,596');
+  ok(resText.includes('每人平均 ¥245,785'), '每人平均');
+  ok(resText.includes('每人 ¥26,000'), '雪票每人 ¥6,500 × 4');
+  const withFlight = await total();
+  await page.uncheck('#bFlight');
+  eq(await total(), yen(52000 + 160000 + 73200 + 94000), '取消機票後總額');
+  ok(!(await page.textContent('#resultRows')).includes('機票'), '取消後不顯示機票行');
+  await page.check('#bFlight');
+  eq(await total(), withFlight, '重新勾選機票');
   ok(resText.includes('往返 ¥15,100 × 2 程'), '交通按成田鐵路 ¥15,100／程');
   eq(await page.locator('#legList li').count(), 3, '交通分段 3 段');
   const legTxt = await page.textContent('#legList');
@@ -126,10 +145,10 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRooms'), '2', '3 人自動 2 房');
   eq(await page.inputValue('#bRentPeople'), '3', '租借人數跟隨');
   // ticket 8200*5*3; lodging 32000*2*5; transport 15100*2*3 + 800*2*5*3; rental (57500+1000)*3
-  eq(await total(), yen(97500 + 320000 + 90600 + 24000 + 175500), '3 人總額');
+  eq(await total(), yen(78000 + 320000 + 90600 + 19200 + 141000 + 3 * 2798 / 0.0498), '3 人總額（含機票）');
 
   await page.click('[data-fill="valley"]');
-  eq(await total(), yen(156000 + 320000 + 90600 + 175500), '全山通票總額（接駁免費）');
+  eq(await total(), yen(124800 + 320000 + 90600 + 141000 + 3 * 2798 / 0.0498), '全山通票總額（接駁免費）');
   ok((await page.textContent('#passAdvice')).includes('已全部使用全山通票'), '全山通票提示');
 
   await page.fill('#bDays', '3'); await page.dispatchEvent('#bDays', 'input');

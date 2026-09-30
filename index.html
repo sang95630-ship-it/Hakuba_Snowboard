@@ -299,6 +299,18 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .alert{margin-top:.8rem;padding:.7rem .9rem;border-radius:var(--radius-md);font-size:var(--text-sm);background:var(--color-warn-bg);color:var(--color-warn)}
 .alert.ok{background:color-mix(in srgb,var(--lv-beginner) 14%,transparent);color:var(--lv-beginner)}
 .rate-note{margin-top:.6rem;font-size:var(--text-xs);color:var(--color-text-muted)}
+.flight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-4)}
+.flight-card .f-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem}
+.flight-card .f-dir{font-family:var(--font-display);font-size:var(--text-lg);font-weight:700}
+.flight-card .f-date{font-size:var(--text-sm);color:var(--color-text-muted);font-variant-numeric:tabular-nums}
+.f-route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6rem}
+.f-route .t{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.f-route .p{font-size:var(--text-xs);color:var(--color-text-muted)}
+.f-route .end{text-align:right}
+.f-mid{text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);min-width:5.5rem}
+.f-mid::before{content:"";display:block;height:2px;margin:.35rem 0;background:linear-gradient(90deg,var(--color-border),var(--color-primary),var(--color-border))}
+.f-price{font-size:var(--text-xl);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums}
+.flight-extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-4);margin-top:var(--space-4)}
 .budget-sticky{display:none}
 @media(max-width:960px){
   .budget-sticky.show{display:flex;align-items:center;gap:.6rem;position:fixed;left:1rem;right:1rem;bottom:max(1rem,env(safe-area-inset-bottom));z-index:1000;
@@ -381,6 +393,7 @@ footer p+p{margin-top:.3rem}
     </a>
     <nav class="site-nav" id="siteNav" aria-label="頁面導覽">
       <a href="#overview">總覽</a>
+      <a href="#flights">航班</a>
       <a href="#location">雪場位置</a>
       <a href="#compare">比較表</a>
       <a href="#resorts">雪場詳情</a>
@@ -504,6 +517,7 @@ function render(data){
   const app = $('#app');
   app.innerHTML = [
     heroHTML(R, meta),
+    flightsHTML(meta),
     locationHTML(byNorth),
     compareHTML(),
     resortsHTML(R, meta),
@@ -573,6 +587,42 @@ function heroHTML(R, meta){
           <span class="carousel-counter" id="carCounter"></span>
         </div>
       </div>
+    </div>
+  </div>
+</section>`;
+}
+
+/* ----- FLIGHTS ----- */
+function flightsHTML(meta){
+  const f = meta.flights;
+  if (!f) return '';
+  const rate = meta.exchangeRate.rate;
+  const leg = (dir, x) => `<article class="card flight-card">
+    <div class="f-head"><span class="f-dir">${dir}</span><span class="f-date">${esc(x.date)}（${esc(x.weekday)}）· ${esc(x.flight)}</span></div>
+    <div class="f-route">
+      <div><div class="t">${esc(x.dep)}</div><div class="p">${esc(x.from)}</div></div>
+      <div class="f-mid">${esc(x.duration)}</div>
+      <div class="end"><div class="t">${esc(x.arr)}</div><div class="p">${esc(x.to)}</div></div>
+    </div></article>`;
+  return `
+<section class="section" id="flights">
+  <div class="container">
+    <div class="section-head"><h2>航班 ${f.status === 'verified' ? tagOk : ''}</h2><p>${esc(f.airline)} · 當地時間（日本比香港快 1 小時）</p></div>
+    <div class="flight-grid">
+      ${leg('去程', f.outbound)}
+      ${leg('回程', f.return)}
+      <article class="card flight-card">
+        <div class="f-head"><span class="f-dir">機票</span><span class="f-date">${esc(f.priceBasis)}</span></div>
+        <div class="f-price">HK$${fmtInt(f.priceHKD)}</div>
+        <p class="hint">≈ ${yen(f.priceHKD / rate)}（按 1 JPY = ${rate} HKD）· 已計入下方預算試算</p>
+      </article>
+    </div>
+    <div class="flight-extra">
+      <article class="card note-card"><h3>銜接與可滑雪日</h3><ul class="plain-list">
+        ${f.connections.map(c => `<li><strong>${esc(c.title)}</strong>：${esc(c.text)}</li>`).join('')}</ul></article>
+      <article class="card note-card"><h3>注意</h3><ul class="plain-list">
+        ${f.warnings.map(w => `<li>${esc(w)}</li>`).join('')}
+        <li class="hint">${esc(f.yearNote)}。</li></ul></article>
     </div>
   </div>
 </section>`;
@@ -812,14 +862,14 @@ function budgetHTML(R, meta){
   return `
 <section class="section" id="budget">
   <div class="container">
-    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設 2 人、5 天滑雪、住 5 晚、由成田機場乘鐵路 + 巴士出發（已核實價格）。</p></div>
+    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設按已核實航班（3/2–3/7）：2 人、滑雪 4 天、住 5 晚、成田機場乘鐵路 + 巴士往返白馬，並計入機票。</p></div>
     <div class="budget-grid">
       <form class="card budget-form" id="budgetForm" novalidate>
         <fieldset>
           <legend>基本</legend>
           <div class="field-row">
             <div class="field"><label for="bPeople">人數</label><input id="bPeople" type="number" min="1" max="20" step="1" value="2" inputmode="numeric"></div>
-            <div class="field"><label for="bDays">滑雪日數</label><input id="bDays" type="number" min="1" max="14" step="1" value="5" inputmode="numeric"></div>
+            <div class="field"><label for="bDays">滑雪日數</label><input id="bDays" type="number" min="1" max="14" step="1" value="4" inputmode="numeric"></div>
             <div class="field"><label for="bNights">住宿晚數</label><input id="bNights" type="number" min="0" max="21" step="1" value="5" inputmode="numeric"></div>
           </div>
         </fieldset>
@@ -860,6 +910,11 @@ function budgetHTML(R, meta){
           <label class="check"><input type="checkbox" id="rHelmet"> ${esc(rt.helmet.name)}<span class="price">${yen(rt.helmet.perDayTypical)}／日</span></label>
           <label class="check"><input type="checkbox" id="rCover" checked> ${esc(rt.damageCover.name)}<span class="price">${yen(rt.damageCover.perRental)}／人（一次）</span></label>
           <p class="hint">⚠ ${esc(rt.notRentableNote)}。租借店：${rt.shops.map(s => extLink(s.url, s.name, '')).join('、')}</p>
+        </fieldset>
+        <fieldset>
+          <legend>機票</legend>
+          <label class="check"><input type="checkbox" id="bFlight" ${meta.flights ? 'checked' : 'disabled'}> ${meta.flights ? `${esc(meta.flights.airline)} ${esc(meta.flights.outbound.flight)} / ${esc(meta.flights.return.flight)}` : '未有機票資料'}<span class="price">${meta.flights ? `HK$${fmtInt(meta.flights.priceHKD)}／人` : ''}</span></label>
+          <p class="hint">機票以港幣實價計（${meta.flights ? esc(meta.flights.priceBasis) : ''}），日圓按匯率換算；人數跟隨「基本」欄。</p>
         </fieldset>
         <fieldset>
           <legend>匯率</legend>
@@ -906,7 +961,7 @@ function initBudget(R, meta){
   };
 
   const buildDays = () => {
-    const days = clampInt(el('bDays'), 1, 14, 5);
+    const days = clampInt(el('bDays'), 1, 14, 4);
     while (dayChoices.length < days) dayChoices.push(dayChoices.length ? dayChoices[dayChoices.length - 1] : defaultResort);
     const opts = id => `<option value="valley"${id === 'valley' ? ' selected' : ''}>全山通票（${yen(VALLEY)}）</option>` +
       R.map(r => `<option value="${esc(r.id)}"${r.id === id ? ' selected' : ''}>${esc(r.name)}（${yen(r.ticket.adult1Day)}${r.ticket.priceType === 'early-bird' ? ' 早鳥' : ''}）</option>`).join('');
@@ -916,7 +971,7 @@ function initBudget(R, meta){
 
   const calc = () => {
     const people = clampInt(el('bPeople'), 1, 20, 2);
-    const days = clampInt(el('bDays'), 1, 14, 5);
+    const days = clampInt(el('bDays'), 1, 14, 4);
     const nights = clampInt(el('bNights'), 0, 21, 5);
     const rooms = clampInt(el('bRooms'), 1, 20, 1);
     const roomPrice = Math.max(0, parseFloat(el('bRoomPrice').value) || 0);
@@ -942,13 +997,16 @@ function initBudget(R, meta){
                      + (el('rHelmet').checked ? rt.helmet.perDayTypical : 0);
     const cover = el('rCover').checked && perDayRent > 0 ? rt.damageCover.perRental : 0;
     const rental = (perDayRent * days + cover) * rentPeople;
-    const total = ticket + lodging + transport + rental;
+    const flightHkd = meta.flights && el('bFlight').checked ? meta.flights.priceHKD * people : 0;
+    const flight = flightHkd / rate;              // 港幣實價，換算日圓只為加總
+    const total = ticket + lodging + transport + rental + flight;
 
     const row = (label, v, sub) => `<div class="res-row"><span>${label}</span><strong>${yen(v)}</strong><span class="hkd">${hkd(v, rate)}</span>${sub ? `<small>${sub}</small>` : ''}</div>`;
     el('resultRows').innerHTML =
       row('雪票', ticket, `${people} 人 × ${days} 日，每人 ${yen(ticketPerPerson)}`) +
       row('住宿', lodging, `${rooms} 房 × ${nights} 晚 × ${yen(roomPrice)}`) +
       row('交通', transport, `往返 ${yen(pkg.typical)} × 2 程 × ${people} 人 = ${yen(transportMain)}` + (shuttle ? `；接駁巴士 ${yen(shuttle)}` : '；接駁巴士 ¥0')) +
+      (flightHkd ? `<div class="res-row"><span>機票</span><strong>≈ ${yen(flight)}</strong><span class="hkd">HK$${fmtInt(flightHkd)}</span><small>HK$${fmtInt(meta.flights.priceHKD)} × ${people} 人（港幣實價）</small></div>` : '') +
       row('雪具租借', rental, rentPeople && perDayRent ? `${rentPeople} 人 × ${days} 日 × ${yen(perDayRent)}` + (cover ? ` + 保障 ${yen(cover)}／人` : '') : '不租借') +
       `<div class="res-row res-total"><span>總額</span><strong id="totalJpy">${yen(total)}</strong><span class="hkd" id="totalHkd">${hkd(total, rate)}</span>
         <small>每人平均 ${yen(total / people)}（${hkd(total / people, rate)}）</small></div>`;
@@ -984,7 +1042,7 @@ function initBudget(R, meta){
     if (s) { dayChoices[+s.dataset.day] = s.value; calc(); }
   });
   $$('#budget [data-fill]').forEach(b => b.addEventListener('click', () => {
-    const days = clampInt(el('bDays'), 1, 14, 5);
+    const days = clampInt(el('bDays'), 1, 14, 4);
     for (let i = 0; i < days; i++) dayChoices[i] = b.dataset.fill;
     if (b.dataset.fill !== 'valley') { el('bBase').value = b.dataset.fill; roomPriceTouched = false; setRoomPrice(); }
     buildDays(); calc();
@@ -993,7 +1051,7 @@ function initBudget(R, meta){
     if (!['bDays', 'bPeople', 'bRooms', 'bRentPeople', 'bRoomPrice', 'bBase'].includes(i.id)) i.addEventListener('input', calc);
   });
   // 失焦時把輸入修正為合法範圍
-  [['bPeople', 1, 20, 2], ['bDays', 1, 14, 5], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, 2], ['bRentPeople', 0, 20, 2]]
+  [['bPeople', 1, 20, 2], ['bDays', 1, 14, 4], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, 2], ['bRentPeople', 0, 20, 2]]
     .forEach(([id, min, max, fb]) => el(id).addEventListener('change', () => {
       el(id).value = clampInt(el(id), min, max, fb);
       if (id === 'bDays') buildDays();

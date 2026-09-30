@@ -13,7 +13,7 @@
 - **上線**：GitHub → Settings → Pages → 選擇分支與 `/ (root)`
 - **更新數據**：只需修改 `data/resorts.json`，網頁自動更新
 - **核對費用**：[`docs/cost-fact-check.md`](docs/cost-fact-check.md)（逐項清單 + 官方連結）
-- **測試**：`node tests/site.test.js`（Playwright，278 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
+- **測試**：`node tests/site.test.js`（Playwright，303 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
 
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
@@ -24,6 +24,18 @@
 | 鹿島槍 Kashimayari | [link](https://www.skiresort.com/en/ski-resort/sun-alpina-kashimayari/) | [kashimayari.net](https://www.kashimayari.net/snow/) | [map](assets/maps/kashimayari.webp) |
 
 ---
+
+## 0. 航班（✓ 用戶 2026-09 核實）
+
+| | 航班 | 日期 | 時間（當地） | 航程 |
+|---|---|---|---|---|
+| 去程 | 香港航空 HX604 | 2027-03-02（二） | 08:10 香港 HKG T1 → 13:20 東京成田 NRT T1 | 4 小時 10 分 |
+| 回程 | 香港航空 HX605 | 2027-03-07（日） | 14:20 東京成田 NRT T1 → 18:55 香港 HKG T1 | 5 小時 35 分 |
+
+- 機票：**HK$2,798**（每人來回，推斷）≈ ¥56,185（匯率 0.0498）
+- 用戶提供日期為 2/3/2026、7/3/2026；因 2026-03 已過去，且栂池住宿為 2027-03-03 至 03-08，按 2027 年處理
+- 可滑雪日：3/3–3/6 共 **4 天**，住宿 5 晚；抵達及回程日都不能滑雪
+- ⚠ 航班 3/2–3/7 與栂池 Airbnb 3/3–3/8 不一致
 
 ## 1. 索道比較（運輸長度 / 數量 / 容客量）
 
