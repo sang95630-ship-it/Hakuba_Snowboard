@@ -450,6 +450,7 @@ const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const safeUrl = u => (typeof u === 'string' && /^https?:\/\//i.test(u)) ? u : '#';
 const isNum = v => typeof v === 'number' && Number.isFinite(v);
 const fmtInt = n => Math.round(n).toLocaleString('en-US');
+const fmtExact = n => Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const yen = n => '¥' + fmtInt(n);
 const hkd = (n, rate) => 'HK$' + fmtInt(n * rate);
 const orDash = (v, f = x => x) => isNum(v) ? f(v) : '—';
@@ -818,7 +819,7 @@ function cardHTML(r, i, meta){
 function checkedHTML(list, rate){
   if (!list || !list.length) return '';
   const price = it => it.currency === 'HKD'
-    ? `HK$${fmtInt(it.price)}<br><small>≈ ${yen(it.price / rate)}</small>`
+    ? `HK$${fmtExact(it.price)}<br><small>≈ ${yen(it.price / rate)}</small>`
     : `${yen(it.price)}<br><small>≈ ${hkd(it.price, rate)}</small>`;
   return `<div class="info-box"><div class="label">已核實價格 ${tagOk}</div>
     <ul class="checked-list">${list.map(it => {
@@ -950,14 +951,21 @@ function initBudget(R, meta){
     if (!Number.isFinite(v)) v = fallback;
     return Math.min(max, Math.max(min, v));
   };
-  const midPrice = id => { const [a, b] = byId[id].lodging.priceRangePerRoomNight; return Math.round((a + b) / 2 / 1000) * 1000; };
+  const midPrice = id => {
+    const L = byId[id].lodging;
+    if (isNum(L.defaultRoomPrice)) return L.defaultRoomPrice;   // 已選定的住宿
+    const [a, b] = L.priceRangePerRoomNight; return Math.round((a + b) / 2 / 1000) * 1000;
+  };
   let roomPriceTouched = false, roomsTouched = false, rentTouched = false;
 
   const setRoomPrice = () => {
     const r = byId[el('bBase').value];
     const [a, b] = r.lodging.priceRangePerRoomNight;
     if (!roomPriceTouched) el('bRoomPrice').value = midPrice(r.id);
-    el('roomHint').textContent = `${r.name} 旺季參考：${yen(a)}–${yen(b)}／房／晚（預設取中位數，可手動修改）`;
+    const sel = r.lodging.selected;
+    el('roomHint').textContent = sel
+      ? `預設按已選 ${sel.name}：2 人 ${sel.nights} 晚 HK$${fmtExact(sel.totalHKD['2'])}（${sel.checkIn} 至 ${sel.checkOut}），即每 2 人每晚 ≈ ${yen(r.lodging.defaultRoomPrice)}；此房源按人頭收費，房間數 = 人數 ÷ 2。可手動修改。`
+      : `${r.name} 旺季參考：${yen(a)}–${yen(b)}／房／晚（預設取中位數，可手動修改）`;
   };
 
   const buildDays = () => {

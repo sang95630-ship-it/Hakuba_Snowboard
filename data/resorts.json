@@ -229,7 +229,7 @@
         }
       ],
       "warnings": [
-        "航班 3/2–3/7 與已核實的栂池 Airbnb 日期 3/3–3/8 不一致：3/2 晚未有住宿，3/7 晚的住宿會浪費。",
+        "栂池 Airbnb 已改為 2027-03-02 至 03-07（5 晚），與航班日期一致；只限預訂後 24 小時內免費取消。",
         "長野最後一班往白馬巴士時間請查 Alpico 時刻表；如航班延誤，可能趕不上當日巴士。"
       ]
     }
@@ -608,7 +608,21 @@
           "booking": "https://www.booking.com/searchresults.html?ss=Tsugaike+Kogen",
           "googleHotels": "https://www.google.com/travel/search?q=Tsugaike%20Kogen%20hotels"
         },
-        "priceNote": "按用戶核實：一般住宿每晚約 HK$1,300（≈¥26,000）、直達小屋每晚約 HK$1,831（≈¥37,000），2027-03 入住，匯率 0.0498"
+        "priceNote": "預算預設按已選 Airbnb 直達小屋：2 人 5 晚 HK$9,154.72（每晚 HK$1,830.94 ≈ ¥36,766），2027-03-02 至 03-07；一般住宿每晚約 HK$1,300（≈¥26,000）",
+        "defaultRoomPrice": 36766,
+        "selected": {
+          "name": "@tsugaike 滑雪場直達小屋（Airbnb）",
+          "checkIn": "2027-03-02",
+          "checkOut": "2027-03-07",
+          "nights": 5,
+          "totalHKD": {
+            "2": 9154.72,
+            "4": 18309.45
+          },
+          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-02&check_out=2027-03-07",
+          "cancellation": "預訂後 24 小時內免費取消",
+          "checked": "2026-09 用戶核實"
+        }
       },
       "beginnerScore": 5,
       "summary": "山腳「鐘の鳴る丘」平均坡度約 8°、寬度極大，是白馬最友善初學者的雪場；中級林道長，住宿價格相對親民。",
@@ -660,12 +674,22 @@
         {
           "category": "住宿",
           "item": "栂池直達小屋（Airbnb，2 人 5 晚總價）",
-          "price": 9157,
+          "price": 9154.72,
           "currency": "HKD",
           "cancellable": false,
-          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-03&check_out=2027-03-08",
+          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-02&check_out=2027-03-07",
           "checked": "2026-09 用戶核實",
-          "note": "2027-03-03 至 03-08；每晚約 HK$1,831"
+          "note": "2027-03-02 至 03-07；每晚 HK$1,830.94；只限預訂後 24 小時內免費取消"
+        },
+        {
+          "category": "住宿",
+          "item": "栂池直達小屋（Airbnb，4 人 5 晚總價）",
+          "price": 18309.45,
+          "currency": "HKD",
+          "cancellable": false,
+          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=4&check_in=2027-03-02&check_out=2027-03-07",
+          "checked": "2026-09 用戶核實",
+          "note": "2027-03-02 至 03-07；按人頭收費，每人每晚約 HK$915，與 2 人價相同"
         },
         {
           "category": "住宿",
