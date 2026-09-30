@@ -56,7 +56,7 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-02（二）', '2027-03-07（日）', 'HKG T1', 'NRT T1', 'HK$2,798', '已核實'])
     ok(ftxt.includes(t), `航班資料含「${t}」`);
   ok(ftxt.includes(yen(fl.priceHKD / data.meta.exchangeRate.rate)), '機票日圓換算');
-  ok(ftxt.includes('3/3–3/8'), '提示航班與住宿日期不一致');
+  ok(ftxt.includes('2027-03-02 至 03-07') && !ftxt.includes('不一致'), '住宿已與航班日期一致');
   ok(ftxt.includes('2026'), '註明年份推斷');
   eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
 
@@ -114,21 +114,22 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   const total = async () => (await page.textContent('#totalJpy')).trim();
   eq(await page.inputValue('#bRoute'), 'narita-rail', '預設路線 = 成田鐵路（已核實）');
   eq(await page.inputValue('#bRate'), '0.0498', '預設匯率 0.0498');
-  eq(await page.inputValue('#bRoomPrice'), '32000', '預設房價 = 栂池核實範圍中位數');
+  eq(await page.inputValue('#bRoomPrice'), '36766', '預設房價 = 已選 Airbnb（HK$9,154.72 ÷ 5 晚 ÷ 0.0498）');
+  ok((await page.textContent('#roomHint')).includes('HK$9,154.72'), '住宿提示顯示已選 Airbnb 價');
   // default 2 人 4 日 5 晚: 52,000 + 160,000 + (60,400 + 12,800) + 94,000 + 機票 2×2798/0.0498
   eq(await page.inputValue('#bDays'), '4', '預設滑雪 4 日（按航班）');
-  eq(await total(), yen(52000 + 160000 + 73200 + 94000 + 2 * 2798 / 0.0498), '預設總額（含機票）');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$24,480', '預設總額 HKD（0.0498）');
+  eq(await total(), yen(52000 + 183830 + 73200 + 94000 + 2 * 2798 / 0.0498), '預設總額（含機票）');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$25,667', '預設總額 HKD（0.0498）');
   ok((await page.textContent('#passAdvice')).includes('¥18,400'), '全山通票比較：目前便宜 ¥18,400');
   ok((await page.textContent('#dayList')).includes('¥6,500 早鳥'), '每日選單標示栂池早鳥價');
   const resText = await page.textContent('#resultRows');
-  ok(resText.includes('¥52,000') && resText.includes('¥160,000') && resText.includes('¥73,200') && resText.includes('¥94,000'), '四項小計正確');
+  ok(resText.includes('¥52,000') && resText.includes('¥183,830') && resText.includes('HK$9,155') && resText.includes('¥73,200') && resText.includes('¥94,000'), '四項小計正確');
   ok(resText.includes('HK$5,596') && resText.includes('HK$2,798 × 2 人'), '機票 HK$2,798 × 2 = HK$5,596');
-  ok(resText.includes('每人平均 ¥245,785'), '每人平均');
+  ok(resText.includes('每人平均 ¥257,700'), '每人平均');
   ok(resText.includes('每人 ¥26,000'), '雪票每人 ¥6,500 × 4');
   const withFlight = await total();
   await page.uncheck('#bFlight');
-  eq(await total(), yen(52000 + 160000 + 73200 + 94000), '取消機票後總額');
+  eq(await total(), yen(52000 + 183830 + 73200 + 94000), '取消機票後總額');
   ok(!(await page.textContent('#resultRows')).includes('機票'), '取消後不顯示機票行');
   await page.check('#bFlight');
   eq(await total(), withFlight, '重新勾選機票');
@@ -145,10 +146,10 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRooms'), '2', '3 人自動 2 房');
   eq(await page.inputValue('#bRentPeople'), '3', '租借人數跟隨');
   // ticket 8200*5*3; lodging 32000*2*5; transport 15100*2*3 + 800*2*5*3; rental (57500+1000)*3
-  eq(await total(), yen(78000 + 320000 + 90600 + 19200 + 141000 + 3 * 2798 / 0.0498), '3 人總額（含機票）');
+  eq(await total(), yen(78000 + 367660 + 90600 + 19200 + 141000 + 3 * 2798 / 0.0498), '3 人總額（含機票）');
 
   await page.click('[data-fill="valley"]');
-  eq(await total(), yen(124800 + 320000 + 90600 + 141000 + 3 * 2798 / 0.0498), '全山通票總額（接駁免費）');
+  eq(await total(), yen(124800 + 367660 + 90600 + 141000 + 3 * 2798 / 0.0498), '全山通票總額（接駁免費）');
   ok((await page.textContent('#passAdvice')).includes('已全部使用全山通票'), '全山通票提示');
 
   await page.fill('#bDays', '3'); await page.dispatchEvent('#bDays', 'input');
@@ -180,7 +181,9 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   await page.fill('#bPeople', ''); await page.dispatchEvent('#bPeople', 'input');
   ok(!/NaN|undefined|Infinity/.test(await page.textContent('#budgetResult')), '人數留空不出 NaN');
   await page.fill('#bPeople', '-5'); await page.dispatchEvent('#bPeople', 'change');
-  eq(await page.inputValue('#bPeople'), '1', '負數人數修正為 1');
+  eq(await page.inputValue('#bPeople'), '2', '負數人數修正為最少 2 人');
+  await page.fill('#bPeople', '1'); await page.dispatchEvent('#bPeople', 'change');
+  eq(await page.inputValue('#bPeople'), '2', '1 人修正為最少 2 人');
   await page.fill('#bDays', '99'); await page.dispatchEvent('#bDays', 'change');
   eq(await page.locator('#dayList select').count(), 14, '日數上限 14');
   await page.fill('#bRate', '0'); await page.dispatchEvent('#bRate', 'input');
@@ -220,7 +223,7 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
       const li = items.nth(k);
       const txt = await li.textContent();
       ok(txt.includes(it.item), `${r.name}：${it.item}`);
-      const priceTxt = it.currency === 'HKD' ? 'HK$' + it.price.toLocaleString('en-US') : yen(it.price);
+      const priceTxt = it.currency === 'HKD' ? 'HK$' + (Number.isInteger(it.price) ? it.price.toLocaleString('en-US') : it.price.toLocaleString('en-US', { minimumFractionDigits: 2 })) : yen(it.price);
       ok(txt.includes(priceTxt), `  價格 ${priceTxt}`);
       const conv = it.currency === 'HKD' ? yen(it.price / data.meta.exchangeRate.rate) : 'HK$' + Math.round(it.price * data.meta.exchangeRate.rate).toLocaleString('en-US');
       ok(txt.includes(conv), `  換算 ${conv}`);
@@ -230,9 +233,20 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
     }
   }
   ok((await page.locator('#card-tsugaike .face.front .pill').first().textContent()).includes('早鳥 1 日券 ¥6,500'), '栂池卡正面顯示早鳥 ¥6,500');
+  {
+    const p4 = await ctx.newPage();
+    await p4.goto(BASE); await p4.waitForSelector('#resultRows .res-row');
+    await p4.fill('#bPeople', '4'); await p4.dispatchEvent('#bPeople', 'input');
+    const lodgingRow = await p4.locator('#resultRows .res-row').nth(1).textContent();
+    ok(lodgingRow.includes('2 房 × 5 晚') && lodgingRow.includes('¥367,660') && lodgingRow.includes('HK$18,309'),
+       '4 人住宿 ¥367,660 ≈ HK$18,309（Airbnb 4 人報價 HK$18,309.45）');
+    await p4.close();
+  }
   const tsBack = page.locator('#card-tsugaike .face.back');
   ok((await tsBack.locator('.info-box').first().textContent()).includes('2026-11-30'), '栂池卡背雪票註明截止日');
   ok((await tsBack.textContent()).includes('2022-23'), '栂池租借標示 2022-23 舊價目表');
+  ok((await tsBack.textContent()).includes('2 人每晚 HK$1,831') && !(await tsBack.textContent()).includes('4 人 5 晚'), '栂池卡背只列 2 人每晚 HK$1,831');
+  ok((await page.textContent('#budget')).includes('至少 2 人'), '預算註明至少 2 人');
   ok((await page.locator('#card-iwatake .face.back').textContent()).includes('可能已含裝備租借'), '岩岳 KKday 標示可能含租借');
   ok((await page.locator('#card-goryu-47 .face.back .info-box').first().textContent()).includes('已核實'), '五竜雪票標示已核實');
   await page.locator('#card-tsugaike [data-flip="open"]').click();
