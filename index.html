@@ -863,13 +863,13 @@ function budgetHTML(R, meta){
   return `
 <section class="section" id="budget">
   <div class="container">
-    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設按已核實航班（3/2–3/7）：2 人、滑雪 4 天、住 5 晚、成田機場乘鐵路 + 巴士往返白馬，並計入機票。</p></div>
+    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設按已核實航班（3/2–3/7）：2 人（行程至少 2 人；住宿按人頭收費，多人沒有優惠）、滑雪 4 天、住 5 晚、成田機場乘鐵路 + 巴士往返白馬，並計入機票。</p></div>
     <div class="budget-grid">
       <form class="card budget-form" id="budgetForm" novalidate>
         <fieldset>
           <legend>基本</legend>
           <div class="field-row">
-            <div class="field"><label for="bPeople">人數</label><input id="bPeople" type="number" min="1" max="20" step="1" value="2" inputmode="numeric"></div>
+            <div class="field"><label for="bPeople">人數（至少 2 人）</label><input id="bPeople" type="number" min="2" max="20" step="1" value="2" inputmode="numeric"></div>
             <div class="field"><label for="bDays">滑雪日數</label><input id="bDays" type="number" min="1" max="14" step="1" value="4" inputmode="numeric"></div>
             <div class="field"><label for="bNights">住宿晚數</label><input id="bNights" type="number" min="0" max="21" step="1" value="5" inputmode="numeric"></div>
           </div>
@@ -937,6 +937,7 @@ function budgetHTML(R, meta){
 </section>`;
 }
 function initBudget(R, meta){
+  const MIN_PEOPLE = (meta.travelers && meta.travelers.min) || 1;
   const c = meta.costs, rt = c.rental;
   const VALLEY = meta.valleyPass.adult1Day_2025_26;
   const shuttleFare = c.localTransport.valleyShuttle.perRide;
@@ -964,7 +965,7 @@ function initBudget(R, meta){
     if (!roomPriceTouched) el('bRoomPrice').value = midPrice(r.id);
     const sel = r.lodging.selected;
     el('roomHint').textContent = sel
-      ? `預設按已選 ${sel.name}：2 人 ${sel.nights} 晚 HK$${fmtExact(sel.totalHKD['2'])}（${sel.checkIn} 至 ${sel.checkOut}），即每 2 人每晚 ≈ ${yen(r.lodging.defaultRoomPrice)}；此房源按人頭收費，房間數 = 人數 ÷ 2。可手動修改。`
+      ? `預設按已選 ${sel.name}：2 人 ${sel.nights} 晚 HK$${fmtExact(sel.totalHKD['2'])}（${sel.checkIn} 至 ${sel.checkOut}），即每 2 人每晚 ≈ ${yen(r.lodging.defaultRoomPrice)}；此房源按人頭收費，多人沒有優惠，房間數 = 人數 ÷ 2。可手動修改。`
       : `${r.name} 旺季參考：${yen(a)}–${yen(b)}／房／晚（預設取中位數，可手動修改）`;
   };
 
@@ -978,7 +979,7 @@ function initBudget(R, meta){
   };
 
   const calc = () => {
-    const people = clampInt(el('bPeople'), 1, 20, 2);
+    const people = clampInt(el('bPeople'), MIN_PEOPLE, 20, 2);
     const days = clampInt(el('bDays'), 1, 14, 4);
     const nights = clampInt(el('bNights'), 0, 21, 5);
     const rooms = clampInt(el('bRooms'), 1, 20, 1);
@@ -1036,7 +1037,7 @@ function initBudget(R, meta){
   // events
   el('bDays').addEventListener('input', () => { buildDays(); calc(); });
   el('bPeople').addEventListener('input', () => {
-    const p = clampInt(el('bPeople'), 1, 20, 2);
+    const p = clampInt(el('bPeople'), MIN_PEOPLE, 20, 2);
     if (!roomsTouched) el('bRooms').value = Math.ceil(p / 2);
     if (!rentTouched) el('bRentPeople').value = p;
     calc();
@@ -1059,7 +1060,7 @@ function initBudget(R, meta){
     if (!['bDays', 'bPeople', 'bRooms', 'bRentPeople', 'bRoomPrice', 'bBase'].includes(i.id)) i.addEventListener('input', calc);
   });
   // 失焦時把輸入修正為合法範圍
-  [['bPeople', 1, 20, 2], ['bDays', 1, 14, 4], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, 2], ['bRentPeople', 0, 20, 2]]
+  [['bPeople', MIN_PEOPLE, 20, 2], ['bDays', 1, 14, 4], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, 2], ['bRentPeople', 0, 20, 2]]
     .forEach(([id, min, max, fb]) => el(id).addEventListener('change', () => {
       el(id).value = clampInt(el(id), min, max, fb);
       if (id === 'bDays') buildDays();

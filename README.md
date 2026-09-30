@@ -13,7 +13,7 @@
 - **上線**：GitHub → Settings → Pages → 選擇分支與 `/ (root)`
 - **更新數據**：只需修改 `data/resorts.json`，網頁自動更新
 - **核對費用**：[`docs/cost-fact-check.md`](docs/cost-fact-check.md)（逐項清單 + 官方連結）
-- **測試**：`node tests/site.test.js`（Playwright，309 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
+- **測試**：`node tests/site.test.js`（Playwright，308 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
 
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
@@ -156,8 +156,7 @@
 | 栂池 | 早鳥 1 日券（可取消） | ¥7,280 | 截止購買 2026-11-30 | [連結](https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html) |
 | 栂池 | 早鳥 1 日券（不可取消） | ¥6,500 | 截止購買 2026-11-30 | [連結](https://tsugaike.nippon-ski.com/ja/earley-lift-ticket.html) |
 | 栂池 | 雪場租借 標準雪板套裝 4 日 | ¥16,000 | ⚠ 2022-23 季價目表 | [PDF](https://www.tsugaike.gr.jp/winter/wp-content/uploads/2022/12/tsugaike2022-23.pdf) |
-| 栂池 | 直達小屋（Airbnb，2 人 5 晚） | **HK$9,154.72** | 2027-03-02 至 03-07；每晚 HK$1,830.94；預訂後 24 小時內免費取消 | [連結](https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-02&check_out=2027-03-07) |
-| 栂池 | 直達小屋（Airbnb，4 人 5 晚） | **HK$18,309.45** | 同上；按人頭收費，每人每晚約 HK$915 | [連結](https://www.airbnb.com.hk/rooms/6020677?adults=4&check_in=2027-03-02&check_out=2027-03-07) |
+| 栂池 | 直達小屋（Airbnb，2 人 5 晚） | **HK$9,154.72** | 2027-03-02 至 03-07；2 人每晚 HK$1,831；至少 2 人，按人頭收費，多人沒有優惠；預訂後 24 小時內免費取消 | [連結](https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-02&check_out=2027-03-07) |
 | 栂池 | 其他住宿（每晚約 HK$1,300 × 5） | HK$6,500 | 用戶估算 | — |
 | 五竜 & 47 | 1 日券（首次購票價） | ¥9,500 | 可能含 IC 卡押金 | [連結](https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html) |
 | 五竜 & 47 | 3 日券（首次購票價） | ¥25,000 | 每日約 ¥8,333 | [連結](https://www.hakuba47.co.jp/winter/en/tickets/lift_tickets_info/entry-110.html) |

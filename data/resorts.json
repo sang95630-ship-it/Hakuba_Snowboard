@@ -232,6 +232,10 @@
         "栂池 Airbnb 已改為 2027-03-02 至 03-07（5 晚），與航班日期一致；只限預訂後 24 小時內免費取消。",
         "長野最後一班往白馬巴士時間請查 Alpico 時刻表；如航班延誤，可能趕不上當日巴士。"
       ]
+    },
+    "travelers": {
+      "min": 2,
+      "note": "行程至少 2 人；住宿按人頭收費，多人預訂沒有優惠"
     }
   },
   "resorts": [
@@ -608,7 +612,7 @@
           "booking": "https://www.booking.com/searchresults.html?ss=Tsugaike+Kogen",
           "googleHotels": "https://www.google.com/travel/search?q=Tsugaike%20Kogen%20hotels"
         },
-        "priceNote": "預算預設按已選 Airbnb 直達小屋：2 人 5 晚 HK$9,154.72（每晚 HK$1,830.94 ≈ ¥36,766），2027-03-02 至 03-07；一般住宿每晚約 HK$1,300（≈¥26,000）",
+        "priceNote": "預算預設按已選 Airbnb 直達小屋：2 人每晚 HK$1,831（≈ ¥36,766），5 晚 HK$9,154.72，2027-03-02 至 03-07；按人頭收費，多人沒有優惠",
         "defaultRoomPrice": 36766,
         "selected": {
           "name": "@tsugaike 滑雪場直達小屋（Airbnb）",
@@ -679,17 +683,7 @@
           "cancellable": false,
           "url": "https://www.airbnb.com.hk/rooms/6020677?adults=2&check_in=2027-03-02&check_out=2027-03-07",
           "checked": "2026-09 用戶核實",
-          "note": "2027-03-02 至 03-07；每晚 HK$1,830.94；只限預訂後 24 小時內免費取消"
-        },
-        {
-          "category": "住宿",
-          "item": "栂池直達小屋（Airbnb，4 人 5 晚總價）",
-          "price": 18309.45,
-          "currency": "HKD",
-          "cancellable": false,
-          "url": "https://www.airbnb.com.hk/rooms/6020677?adults=4&check_in=2027-03-02&check_out=2027-03-07",
-          "checked": "2026-09 用戶核實",
-          "note": "2027-03-02 至 03-07；按人頭收費，每人每晚約 HK$915，與 2 人價相同"
+          "note": "2027-03-02 至 03-07；2 人每晚 HK$1,831；至少 2 人入住，按人頭收費，多人預訂沒有優惠；只限預訂後 24 小時內免費取消"
         },
         {
           "category": "住宿",
