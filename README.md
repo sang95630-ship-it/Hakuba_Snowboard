@@ -13,7 +13,7 @@
 - **上線**：GitHub → Settings → Pages → 選擇分支與 `/ (root)`
 - **更新數據**：只需修改 `data/resorts.json`，網頁自動更新
 - **核對費用**：[`docs/cost-fact-check.md`](docs/cost-fact-check.md)（逐項清單 + 官方連結）
-- **測試**：`node tests/site.test.js`（Playwright，308 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
+- **測試**：`node tests/site.test.js`（Playwright，344 項：數據核對、排序、預算計算、燈箱縮放、手機版、深色模式、後備地圖等），用法見檔案開頭
 
 | 雪場 | skiresort | 官網 | 地圖 |
 |---|---|---|---|
