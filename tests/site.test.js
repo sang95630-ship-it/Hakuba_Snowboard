@@ -56,8 +56,8 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-02（二）', '2027-03-07（日）', 'HKG T1', 'NRT T1', 'HK$2,798', '已核實'])
     ok(ftxt.includes(t), `航班資料含「${t}」`);
   ok(ftxt.includes(yen(fl.priceHKD / data.meta.exchangeRate.rate)), '機票日圓換算');
-  ok(ftxt.includes('2027-03-02 至 03-07') && !ftxt.includes('不一致'), '住宿已與航班日期一致');
-  ok(ftxt.includes('2026'), '註明年份推斷');
+  ok(!ftxt.includes('不一致'), '沒有日期不一致警告');
+  eq(await page.$$eval('#flights li', ls => ls.filter(l => l.textContent.trim() === '。' || l.textContent.trim() === '').length), 0, '注意事項沒有空白項目');
   eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
 
   // ---------- 2. Data fidelity ----------
@@ -101,13 +101,67 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq((await colVals(2))[0], '¥9,500', '再按變降序');
   await page.click('[data-sort="cap"]');
   const caps = await colVals(9);
-  eq(caps[0], '43,800', '總運力降序首位 = 栂池');
-  ok(caps[3] === '未公開' && caps[4] === '未公開', '無數據排最後（降序）');
+  eq(JSON.stringify(caps), JSON.stringify(['29,700', '29,300', '28,500', '14,600', '9,800']), '總運力降序（五竜 29,700 居首）');
   await page.click('[data-sort="cap"]');
   const caps2 = await colVals(9);
-  ok(caps2[3] === '未公開' && caps2[4] === '未公開', '無數據排最後（升序）');
+  eq(caps2[0], '9,800', '總運力升序首位 = 鹿島槍');
   await page.click('[data-sort="name"]');
   eq((await colVals(1)).length, 5, '名稱排序後仍 5 行');
+
+  // ---------- 3b. Lifts & lengths ----------
+  console.log('\n[3b] 索道與雪道長度');
+  const SHOT = {
+    'happo-one':  { total: 21, g: 1, c: 20, pm: 1, cap: 28500, km: null, types: { gondola6: 1, chair4hs: 5, chair3: 4, chair2: 11 } },
+    'goryu-47':   { total: 19, g: 2, c: 17, pm: 1, cap: 29700, km: 15.9, types: { gondola8: 1, gondola6: 1, chair4hsb: 1, chair4hs: 3, chair4: 1, chair2hsb: 1, chair2: 11 } },
+    'iwatake':    { total: 12, g: 1, c: 11, pm: 0, cap: 14600, km: 10.3, types: { gondola6: 1, chair4hs: 1, chair3: 1, chair2hs: 1, chair2: 7, chair1: 1 } },
+    'tsugaike':   { total: 18, g: 1, c: 17, pm: 1, cap: 29300, km: 17.9, types: { gondola6: 1, chair4hs: 9, chair3hs: 1, chair2hs: 2, chair2: 5 } },
+    'kashimayari':{ total: 8,  g: 0, c: 8,  pm: 0, cap: 9800,  km: 4.3,  types: { chair4: 3, chair2: 5 } }
+  };
+  for (const r of data.resorts) {
+    const e = SHOT[r.id], l = r.lifts;
+    eq(l.total, e.total, `${r.name} 索道總數 = 截圖（不計輸送帶）`);
+    eq(l.gondola + l.chairlifts, l.total, `${r.name} 纜車 + 吊椅 = 總數`);
+    eq(l.peopleMover, e.pm, `${r.name} 人行輸送帶`);
+    eq(l.capacityPerHour, e.cap, `${r.name} 總運力`);
+    eq(l.totalLengthKm, e.km, `${r.name} 索道總長`);
+    eq(JSON.stringify(l.types), JSON.stringify(e.types), `${r.name} 類型明細 = 截圖`);
+    eq(Object.values(l.types).reduce((a, b) => a + b, 0), l.total, `${r.name} 類型加總 = 總數`);
+  }
+  eq(await page.locator('#liftTable tbody tr').count(), 5, '索道總覽 5 行');
+  const lrows = await page.$$eval('#liftTable tbody tr', trs => trs.map(tr => [...tr.children].map(td => td.textContent.trim())));
+  data.resorts.forEach((r, i) => {
+    eq(lrows[i][1], r.lifts.total + ' 條', `${r.name} 表 1 索道總數`);
+    eq(lrows[i][6], r.lifts.capacityPerHour.toLocaleString('en-US'), `${r.name} 表 1 總運力`);
+    eq(lrows[i][7], r.lifts.totalLengthKm == null ? '未公開' : r.lifts.totalLengthKm + ' km', `${r.name} 表 1 索道總長`);
+  });
+  const hsExpect = { 'happo-one': 5, 'goryu-47': 5, 'iwatake': 2, 'tsugaike': 12, 'kashimayari': 0 };
+  data.resorts.forEach((r, i) => eq(lrows[i][4], String(hsExpect[r.id]), `${r.name} 高速吊椅數`));
+  ok(lrows[2][8].includes('存疑'), '岩岳雪道長度標示存疑');
+  await page.click('#liftTable [data-sort="liftKm"]');
+  const lk = await page.$$eval('#liftTable tbody tr > :nth-child(8)', c => c.map(x => x.textContent.trim()));
+  eq(JSON.stringify(lk), JSON.stringify(['17.9 km', '15.9 km', '10.3 km', '4.3 km', '未公開']), '索道總長降序，未公開排最後');
+  await page.click('#liftTable [data-sort="liftKm"]');
+  const lk2 = await page.$$eval('#liftTable tbody tr > :nth-child(8)', c => c.map(x => x.textContent.trim()));
+  eq(lk2[4], '未公開', '升序時未公開仍排最後');
+  // type matrix
+  const typeRows = await page.$$eval('#liftTypeTable tbody tr[data-type]', trs => trs.map(tr => ({ key: tr.dataset.type, cells: [...tr.querySelectorAll('td')].map(td => td.textContent.trim()), svg: !!tr.querySelector('svg.lift-icon') })));
+  eq(typeRows.length, 12, '類型明細 11 種索道 + 輸送帶');
+  ok(typeRows.every(t => t.svg), '每種類型都有圖示');
+  for (const t of typeRows) {
+    data.resorts.forEach((r, i) => {
+      const n = t.key === 'pm' ? r.lifts.peopleMover : (r.lifts.types[t.key] || 0);
+      eq(t.cells[i], n ? String(n) : '–', `明細 ${t.key} / ${r.name}`);
+    });
+  }
+  const sums = await page.$$eval('#liftTypeTable .sum-row td', c => c.map(x => x.textContent.trim()));
+  eq(JSON.stringify(sums), JSON.stringify(data.resorts.map(r => String(r.lifts.total))), '合計行 = 索道總數');
+  ok((await page.textContent('#lifts')).includes('10 人座 Gondola Noah'), '註明岩岳官方已換 10 人纜車');
+  eq(await page.locator('.site-nav a[href="#lifts"]').count(), 1, '導覽有「索道與雪道」');
+  ok((await page.locator('#card-happo-one .face.front').textContent()).includes('另有人行輸送帶 1 條'), '雪場卡註明人行輸送帶');
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+  await page.evaluate(() => document.getElementById('lifts').scrollIntoView());
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(SHOTS, 'lifts-desktop.png') });
 
   // ---------- 4. Budget ----------
   console.log('\n[4] 預算試算');
@@ -364,6 +418,10 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   await page.reload(); await page.waitForSelector('#compareTable tbody tr');
   eq(await page.getAttribute('html', 'data-theme'), t1, '重新整理後記住主題');
   await page.screenshot({ path: path.join(SHOTS, 'desktop-dark.png'), fullPage: true });
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+  await page.evaluate(() => document.getElementById('liftTypeTable').scrollIntoView());
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(SHOTS, 'lifts-dark.png') });
   eq(page.errors.length, 0, '深色模式重載無 JS 錯誤');
   await ctx.close();
 
