@@ -10,7 +10,8 @@
       "住宿價格為旺季（1–2 月）每房每晚參考區間，須以訂房網站即時報價為準。",
       "雪場地圖：thumb（1200px，頁面顯示）/ full（1917px 原解像度，燈箱放大檢視）。",
       "location.lat/lng 為估算座標（誤差可達數百米），只用於地圖標記位置；googleMapsUrl 以雪場日文正式名稱搜尋，點擊後由 Google Maps 定位。上線前請在 Google Maps 右鍵複製座標核對。",
-      "標示「已核實」的價格由用戶於 2026-09 人手核對，來源連結見雪場卡背面「已核實價格」。"
+      "標示「已核實」的價格由用戶於 2026-09 人手核對，來源連結見雪場卡背面「已核實價格」。",
+      "索道數量、總運力及索道總長以 skiresort.info 索道頁為準（用戶 2026-10 截圖）；人行輸送帶不計入索道總數。"
     ],
     "valleyPass": {
       "name": "Hakuba Valley All-Mountain Day Pass",
@@ -235,7 +236,82 @@
     "travelers": {
       "min": 2,
       "note": "行程至少 2 人；住宿按人頭收費，多人預訂沒有優惠"
-    }
+    },
+    "liftTypes": [
+      {
+        "key": "gondola8",
+        "kind": "gondola",
+        "seats": 8,
+        "label": "8 人纜車"
+      },
+      {
+        "key": "gondola6",
+        "kind": "gondola",
+        "seats": 6,
+        "label": "6 人纜車"
+      },
+      {
+        "key": "chair4hsb",
+        "kind": "chair",
+        "seats": 4,
+        "hs": true,
+        "bubble": true,
+        "label": "4 人高速吊椅（防風罩）"
+      },
+      {
+        "key": "chair4hs",
+        "kind": "chair",
+        "seats": 4,
+        "hs": true,
+        "label": "4 人高速吊椅"
+      },
+      {
+        "key": "chair4",
+        "kind": "chair",
+        "seats": 4,
+        "label": "4 人吊椅（固定式）"
+      },
+      {
+        "key": "chair3hs",
+        "kind": "chair",
+        "seats": 3,
+        "hs": true,
+        "label": "3 人高速吊椅"
+      },
+      {
+        "key": "chair3",
+        "kind": "chair",
+        "seats": 3,
+        "label": "3 人吊椅（固定式）"
+      },
+      {
+        "key": "chair2hsb",
+        "kind": "chair",
+        "seats": 2,
+        "hs": true,
+        "bubble": true,
+        "label": "2 人高速吊椅（防風罩）"
+      },
+      {
+        "key": "chair2hs",
+        "kind": "chair",
+        "seats": 2,
+        "hs": true,
+        "label": "2 人高速吊椅"
+      },
+      {
+        "key": "chair2",
+        "kind": "chair",
+        "seats": 2,
+        "label": "2 人吊椅（固定式）"
+      },
+      {
+        "key": "chair1",
+        "kind": "chair",
+        "seats": 1,
+        "label": "1 人吊椅（固定式）"
+      }
+    ]
   },
   "resorts": [
     {
@@ -250,17 +326,26 @@
         "vertical": 1071
       },
       "lifts": {
-        "total": 23,
+        "total": 21,
         "gondola": 1,
-        "chairlifts": 22,
-        "capacityPerHour": 29500,
+        "chairlifts": 20,
+        "capacityPerHour": 28500,
         "capacityStatus": "verified",
         "mainLift": {
           "name": "Gondola Adam（6 人）",
           "lengthM": 2064,
           "capacityPerHour": 1350,
           "note": "2027-12 預計更新為 10 人座，運力 2,400 人/時"
-        }
+        },
+        "peopleMover": 1,
+        "totalLengthKm": null,
+        "types": {
+          "gondola6": 1,
+          "chair4hs": 5,
+          "chair3": 4,
+          "chair2": 11
+        },
+        "source": "skiresort.info 索道頁（用戶 2026-10 截圖）"
       },
       "slopes": {
         "totalKm": 52,
@@ -338,17 +423,29 @@
         "vertical": 908
       },
       "lifts": {
-        "total": 20,
+        "total": 19,
         "gondola": 2,
-        "chairlifts": 18,
-        "capacityPerHour": null,
-        "capacityStatus": "unknown",
+        "chairlifts": 17,
+        "capacityPerHour": 29700,
+        "capacityStatus": "verified",
         "mainLift": {
           "name": "五竜 Telecabin（8 人）/ Hakuba47 Gondola Line B",
           "lengthM": 2000,
           "capacityPerHour": 2400,
-          "note": "skiresort 所列 8 人纜車 2,400 人/時、6 人纜車 2,000 人/時"
-        }
+          "note": "8 人纜車（五竜 Telecabin）＋ 6 人纜車（Hakuba47）"
+        },
+        "peopleMover": 1,
+        "totalLengthKm": 15.9,
+        "types": {
+          "gondola8": 1,
+          "gondola6": 1,
+          "chair4hsb": 1,
+          "chair4hs": 3,
+          "chair4": 1,
+          "chair2hsb": 1,
+          "chair2": 11
+        },
+        "source": "skiresort.info 索道頁（用戶 2026-10 截圖）"
       },
       "slopes": {
         "totalKm": 22.7,
@@ -449,14 +546,26 @@
         "total": 12,
         "gondola": 1,
         "chairlifts": 11,
-        "capacityPerHour": 11100,
-        "capacityStatus": "estimate",
+        "capacityPerHour": 14600,
+        "capacityStatus": "verified",
         "mainLift": {
           "name": "Gondola Noah（10 人，2024-12 新建）",
           "lengthM": 2183,
           "capacityPerHour": 2400,
-          "note": "最大 2,460 人/時"
-        }
+          "note": "最大 2,460 人/時；skiresort 仍列為 6 人纜車"
+        },
+        "peopleMover": 0,
+        "totalLengthKm": 10.3,
+        "types": {
+          "gondola6": 1,
+          "chair4hs": 1,
+          "chair3": 1,
+          "chair2hs": 1,
+          "chair2": 7,
+          "chair1": 1
+        },
+        "source": "skiresort.info 索道頁（用戶 2026-10 截圖）",
+        "typesNote": "skiresort 仍列為 6 人纜車；岩岳官方 2024-12 已更新為 10 人座 Gondola Noah（最大 2,460 人/時），總運力或已高於 14,600"
       },
       "slopes": {
         "totalKm": 50,
@@ -472,7 +581,8 @@
           "advanced": 10.0,
           "status": "estimate"
         },
-        "longestKm": 3.3
+        "longestKm": 3.3,
+        "totalKmNote": "雪道 50 km 存疑：索道總長只有 10.3 km、滑雪面積 125 ha"
       },
       "ticket": {
         "adult1Day": 7000,
@@ -553,17 +663,27 @@
         "vertical": 904
       },
       "lifts": {
-        "total": 20,
+        "total": 18,
         "gondola": 1,
-        "chairlifts": 19,
-        "capacityPerHour": 43800,
+        "chairlifts": 17,
+        "capacityPerHour": 29300,
         "capacityStatus": "verified",
         "mainLift": {
           "name": "Gondola Eve（6 人）",
           "lengthM": 4120,
           "capacityPerHour": 1350,
           "note": "日本第二長普通索道，單程約 20 分鐘"
-        }
+        },
+        "peopleMover": 1,
+        "totalLengthKm": 17.9,
+        "types": {
+          "gondola6": 1,
+          "chair4hs": 9,
+          "chair3hs": 1,
+          "chair2hs": 2,
+          "chair2": 5
+        },
+        "source": "skiresort.info 索道頁（用戶 2026-10 截圖）"
       },
       "slopes": {
         "totalKm": 25,
@@ -711,14 +831,21 @@
         "total": 8,
         "gondola": 0,
         "chairlifts": 8,
-        "capacityPerHour": null,
-        "capacityStatus": "unknown",
+        "capacityPerHour": 9800,
+        "capacityStatus": "verified",
         "mainLift": {
           "name": "第 1 / 第 6 四人吊椅",
           "lengthM": 960,
           "capacityPerHour": null,
           "note": "雪場地圖顯示營運中 5 條：No.1、2、5、6、7"
-        }
+        },
+        "peopleMover": 0,
+        "totalLengthKm": 4.3,
+        "types": {
+          "chair4": 3,
+          "chair2": 5
+        },
+        "source": "skiresort.info 索道頁（用戶 2026-10 截圖）"
       },
       "slopes": {
         "totalKm": 15.9,

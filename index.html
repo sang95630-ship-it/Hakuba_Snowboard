@@ -218,12 +218,25 @@ th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:
 thead th{background:var(--color-surface-offset);font-weight:700;font-size:var(--text-xs);color:var(--color-text-muted)}
 thead th:first-child{background:var(--color-surface-offset)}
 tbody tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:var(--color-surface-2)}
+tbody tr:hover > *{background:var(--color-surface-2)}
 .sort-btn{display:inline-flex;align-items:center;gap:.25rem;font-weight:700;font-size:var(--text-xs);color:inherit;padding:.2rem 0}
 .sort-btn .arrow{opacity:.35;font-size:.7rem}
 th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;color:var(--color-primary)}
 .best{color:var(--lv-beginner);font-weight:700}
 .stars{color:#e0a100;letter-spacing:.05em}
+.lift-icon{width:38px;height:38px;flex:none;color:var(--color-primary);display:inline-block}
+.type-cell{display:flex;align-items:center;gap:.6rem;font-weight:600}
+.type-table td{text-align:center;min-width:6.5rem}
+.type-table th[scope="row"]{min-width:15rem}
+.type-table .muted{color:var(--color-text-faint)}
+.type-table .sum-row th,.type-table .sum-row td{background:var(--color-surface-offset);border-top:2px solid var(--color-border)}
+.type-table .pm-row th,.type-table .pm-row td{color:var(--color-text-muted)}
+.sub-head{font-size:var(--text-lg);margin:var(--space-8) 0 var(--space-3)}
+.icon-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin-top:.7rem;font-size:var(--text-xs);color:var(--color-text-muted)}
+.icon-legend span{display:inline-flex;align-items:center;gap:.35rem}
+.icon-legend .lift-icon{width:26px;height:26px}
+.table-notes{margin-top:.8rem;font-size:var(--text-xs);color:var(--color-text-muted)}
+.pm-note{display:block;font-size:.72rem}
 .table-hint{margin-top:.6rem;font-size:var(--text-xs);color:var(--color-text-muted)}
 
 /* ratio bar */
@@ -399,6 +412,7 @@ footer p+p{margin-top:.3rem}
       <a href="#flights">航班</a>
       <a href="#location">雪場位置</a>
       <a href="#compare">比較表</a>
+      <a href="#lifts">索道與雪道</a>
       <a href="#resorts">雪場詳情</a>
       <a href="#budget">預算試算</a>
       <a href="#stay">住宿</a>
@@ -524,6 +538,7 @@ function render(data){
     flightsHTML(meta),
     locationHTML(byNorth),
     compareHTML(),
+    liftsHTML(R, meta),
     resortsHTML(R, meta),
     budgetHTML(R, meta),
     stayHTML(R),
@@ -534,7 +549,8 @@ function render(data){
 
   initCarousel(R);
   initLocationMap(byNorth);
-  initCompare(R);
+  initSortable('compareTable', COLS, R);
+  initSortable('liftTable', LIFT_COLS, R);
   initFlip();
   initBudget(R, meta);
   initLightboxTriggers(R);
@@ -626,7 +642,7 @@ function flightsHTML(meta){
         ${f.connections.map(c => `<li><strong>${esc(c.title)}</strong>：${esc(c.text)}</li>`).join('')}</ul></article>
       <article class="card note-card"><h3>注意</h3><ul class="plain-list">
         ${f.warnings.map(w => `<li>${esc(w)}</li>`).join('')}
-        <li class="hint">${esc(f.yearNote)}。</li></ul></article>
+        ${f.yearNote ? `<li class="hint">${esc(f.yearNote)}。</li>` : ''}</ul></article>
     </div>
   </div>
 </section>`;
@@ -684,59 +700,132 @@ function compareHTML(){
     <div class="section-head"><h2>總覽比較表</h2><p>點擊表頭可排序；綠色粗體為該項最佳。</p></div>
     <div class="table-wrap" tabindex="0" role="region" aria-label="雪場比較表（可橫向捲動）">
       <table id="compareTable">
-        <thead><tr>${COLS.map(c => c.noSort
-          ? `<th scope="col">${c.label}</th>`
-          : `<th scope="col" aria-sort="none"><button class="sort-btn" type="button" data-sort="${c.key}">${c.label}<span class="arrow" aria-hidden="true">↕</span></button></th>`).join('')}</tr></thead>
+        ${theadHTML(COLS)}
         <tbody></tbody>
       </table>
     </div>
     <div class="ratio-legend"><span class="b">初級</span><span class="m">中級</span><span class="a">高級</span></div>
-    <p class="table-hint">手機可左右滑動表格。雪票為 2025-26 季大人 1 日券窗口價，<strong>栂池除外：採用已核實的 2026-27 早鳥價 ¥6,500</strong>（須於 2026-11-30 前購買、不可取消）；總運力「未公開」表示官方及 skiresort 均未提供。</p>
+    <p class="table-hint">手機可左右滑動表格。雪票為 2025-26 季大人 1 日券窗口價，<strong>栂池除外：採用已核實的 2026-27 早鳥價 ¥6,500</strong>（須於 2026-11-30 前購買、不可取消）；索道數與總運力以 skiresort 為準，詳見下方「索道與雪道長度」。</p>
   </div>
 </section>`;
 }
-function initCompare(R){
-  const tbody = $('#compareTable tbody');
+function theadHTML(cols){
+  return `<thead><tr>${cols.map(c => c.noSort
+    ? `<th scope="col">${c.label}</th>`
+    : `<th scope="col" aria-sort="none"><button class="sort-btn" type="button" data-sort="${c.key}">${c.label}<span class="arrow" aria-hidden="true">↕</span></button></th>`).join('')}</tr></thead>`;
+}
+// 可排序表格：無數據永遠排最後；c.best 標示最佳值
+function initSortable(tableId, cols, R){
+  const table = document.getElementById(tableId), tbody = $('tbody', table);
   const best = {};
-  COLS.forEach(c => {
+  cols.forEach(c => {
     if (!c.best) return;
     const vals = R.map(c.get).filter(isNum);
-    best[c.key] = c.best === 'min' ? Math.min(...vals) : Math.max(...vals);
+    if (vals.length) best[c.key] = c.best === 'min' ? Math.min(...vals) : Math.max(...vals);
   });
   let sortKey = null, dir = 1;
   const draw = () => {
     let rows = [...R];
     if (sortKey) {
-      const col = COLS.find(c => c.key === sortKey);
+      const col = cols.find(c => c.key === sortKey);
       rows.sort((a, b) => {
         const va = col.get(a), vb = col.get(b);
         if (col.text) return String(va).localeCompare(String(vb), 'zh-Hant') * dir;
         const na = isNum(va), nb = isNum(vb);
         if (!na && !nb) return 0;
-        if (!na) return 1;           // 無數據永遠排最後
+        if (!na) return 1;
         if (!nb) return -1;
         return (va - vb) * dir;
       });
     }
-    tbody.innerHTML = rows.map(r => `<tr>${COLS.map((c, i) => {
+    tbody.innerHTML = rows.map(r => `<tr>${cols.map((c, i) => {
       const v = c.get(r);
       const cls = c.best && isNum(v) && v === best[c.key] ? ' class="best"' : '';
       const cell = c.fmt(v, r);
       return i === 0 ? `<th scope="row">${cell}</th>` : `<td${cls}>${cell}</td>`;
     }).join('')}</tr>`).join('');
   };
-  $$('#compareTable .sort-btn').forEach(btn => btn.addEventListener('click', () => {
+  $$('.sort-btn', table).forEach(btn => btn.addEventListener('click', () => {
     const key = btn.dataset.sort;
     if (sortKey === key) dir = -dir;
-    else { sortKey = key; const col = COLS.find(c => c.key === key); dir = col.best === 'min' || col.text ? 1 : -1; }
-    $$('#compareTable thead th').forEach(th => th.hasAttribute('aria-sort') && th.setAttribute('aria-sort', 'none'));
-    const th = btn.closest('th');
-    th.setAttribute('aria-sort', dir === 1 ? 'ascending' : 'descending');
-    btn.querySelector('.arrow').textContent = dir === 1 ? '↑' : '↓';
-    $$('#compareTable .sort-btn').forEach(b => { if (b !== btn) b.querySelector('.arrow').textContent = '↕'; });
+    else { sortKey = key; const col = cols.find(c => c.key === key); dir = col.best === 'min' || col.text ? 1 : -1; }
+    $$('thead th', table).forEach(th => th.hasAttribute('aria-sort') && th.setAttribute('aria-sort', 'none'));
+    btn.closest('th').setAttribute('aria-sort', dir === 1 ? 'ascending' : 'descending');
+    $$('.sort-btn', table).forEach(b => { b.querySelector('.arrow').textContent = b === btn ? (dir === 1 ? '↑' : '↓') : '↕'; });
     draw();
   }));
   draw();
+}
+
+/* ----- LIFTS & LENGTHS ----- */
+// 索道圖示（自繪 SVG，風格參考 skiresort 的索道圖示）
+function liftIcon(t){
+  const cable = '<path d="M3 9 L37 3" stroke="currentColor" stroke-width="1.6" fill="none"/>';
+  if (t === 'pm') return `<svg class="lift-icon" viewBox="0 0 40 40" aria-hidden="true">
+    <circle cx="20" cy="9" r="3.2" fill="currentColor"/>
+    <path d="M20 13 L20 24 M20 17 L14 21 M20 17 L26 20 M20 24 L16 30 M20 24 L24 30" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    <rect x="5" y="31" width="30" height="5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8" transform="rotate(-8 20 33)"/></svg>`;
+  if (t.kind === 'gondola') return `<svg class="lift-icon" viewBox="0 0 40 40" aria-hidden="true">${cable}
+    <path d="M20 6 L20 13" stroke="currentColor" stroke-width="1.6"/>
+    <rect x="9" y="13" width="22" height="23" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M10 20 H30" stroke="currentColor" stroke-width="1.4"/>
+    <text x="20" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">${t.seats}</text></svg>`;
+  // 吊椅：右下數字 = 座位數；右上 ⚡ = 高速（脫掛式）；弧形罩 = 防風罩
+  return `<svg class="lift-icon" viewBox="0 0 40 40" aria-hidden="true">${cable}
+    <path d="M14 6.5 L14 17" stroke="currentColor" stroke-width="1.8"/>
+    ${t.bubble ? '<path d="M3.5 31 Q3.5 12 21 12.5" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity=".14"/>' : ''}
+    <path d="M7 17 L14 17 M7 17 L7 29 L19 29 M8 29 L8 34 M18 29 L18 34" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="30" y="36" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor">${t.seats}</text>
+    ${t.hs ? '<path d="M31.5 8 L26.5 17.5 L30 17.5 L28 25 L34.5 14.5 L31 14.5 L33.5 8 Z" fill="var(--color-warn)"/>' : ''}</svg>`;
+}
+const hsCount = r => Object.entries(r.lifts.types || {}).filter(([k]) => /^chair\dhs/.test(k)).reduce((a, [, n]) => a + n, 0);
+const LIFT_COLS = [
+  { key: 'name', label: '雪場', get: r => r.name, fmt: (v, r) => `<a href="#card-${esc(r.id)}">${esc(v)}</a>`, text: true },
+  { key: 'total', label: '索道總數', get: r => r.lifts.total, fmt: v => v + ' 條', best: 'max' },
+  { key: 'gondola', label: '纜車', get: r => r.lifts.gondola, fmt: v => v, best: 'max' },
+  { key: 'chair', label: '吊椅', get: r => r.lifts.chairlifts, fmt: v => v, best: 'max' },
+  { key: 'hs', label: '其中高速吊椅', get: hsCount, fmt: v => v, best: 'max' },
+  { key: 'pm', label: '人行輸送帶', get: r => r.lifts.peopleMover, fmt: v => v ? v : '–' },
+  { key: 'cap', label: '總運力 / 時', get: r => r.lifts.capacityPerHour, fmt: v => isNum(v) ? fmtInt(v) : tagUnk, best: 'max' },
+  { key: 'liftKm', label: '索道總長', get: r => r.lifts.totalLengthKm, fmt: v => isNum(v) ? v + ' km' : tagUnk, best: 'max' },
+  { key: 'slopeKm', label: '雪道總長', get: r => r.slopes.totalKm,
+    fmt: (v, r) => v + ' km' + (r.slopes.totalKmNote ? ` <span class="tag-est" title="${esc(r.slopes.totalKmNote)}">存疑</span>` : ''), best: 'max' },
+  { key: 'perLift', label: '每條索道對應雪道', get: r => r.lifts.total ? Math.round(r.slopes.totalKm / r.lifts.total * 10) / 10 : null, fmt: v => isNum(v) ? v + ' km' : '–' }
+];
+function liftsHTML(R, meta){
+  const types = (meta.liftTypes || []).filter(t => R.some(r => (r.lifts.types || {})[t.key]));
+  const cell = n => n ? `<strong>${n}</strong>` : '<span class="muted">–</span>';
+  const notes = [
+    ...R.filter(r => r.lifts.typesNote).map(r => `${r.name}：${r.lifts.typesNote}`),
+    ...R.filter(r => r.slopes.totalKmNote).map(r => `${r.name}：${r.slopes.totalKmNote}`),
+    ...R.filter(r => !isNum(r.lifts.totalLengthKm)).map(r => `${r.name}：skiresort 未有提供索道總長`)
+  ];
+  return `
+<section class="section" id="lifts">
+  <div class="container">
+    <div class="section-head"><h2>索道與雪道長度 ${tagOk}</h2><p>索道數量、總運力及索道總長以 skiresort.info 索道頁為準；人行輸送帶另列，不計入索道總數。點擊表頭可排序；綠色粗體為該項最佳。</p></div>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="索道與雪道長度總覽（可橫向捲動）">
+      <table id="liftTable">${theadHTML(LIFT_COLS)}<tbody></tbody></table>
+    </div>
+    <h3 class="sub-head">索道類型明細</h3>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="索道類型明細（可橫向捲動）">
+      <table id="liftTypeTable" class="type-table">
+        <thead><tr><th scope="col">類型</th>${R.map(r => `<th scope="col">${esc(r.name)}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${types.map(t => `<tr data-type="${esc(t.key)}"><th scope="row"><span class="type-cell">${liftIcon(t)}<span>${esc(t.label)}</span></span></th>${R.map(r => `<td>${cell((r.lifts.types || {})[t.key])}</td>`).join('')}</tr>`).join('')}
+          <tr class="sum-row"><th scope="row"><span class="type-cell"><span class="lift-icon"></span><span>索道合計</span></span></th>${R.map(r => `<td><strong>${r.lifts.total}</strong></td>`).join('')}</tr>
+          <tr data-type="pm" class="pm-row"><th scope="row"><span class="type-cell">${liftIcon('pm')}<span>人行輸送帶（不計入）</span></span></th>${R.map(r => `<td>${cell(r.lifts.peopleMover)}</td>`).join('')}</tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="icon-legend">
+      <span>${liftIcon({ kind: 'chair', seats: 4, hs: true })}⚡ = 高速（脫掛式）</span>
+      <span>${liftIcon({ kind: 'chair', seats: 4, bubble: true })}弧形 = 防風罩</span>
+      <span>${liftIcon({ kind: 'gondola', seats: 6 })}數字 = 每車座位數</span>
+    </div>
+    <ul class="plain-list table-notes">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+  </div>
+</section>`;
 }
 
 /* ----- RESORT CARDS ----- */
@@ -781,7 +870,7 @@ function cardHTML(r, i, meta){
         <div><span>垂直落差</span><strong>${fmtInt(e.vertical)} m</strong></div>
         <div><span>雪道</span><strong>${s.totalKm} km · ${s.runs} 條</strong></div>
         <div><span>最長滑道</span><strong>${orDash(s.longestKm, v => v + ' km')}</strong></div>
-        <div><span>索道</span><strong>${l.total} 條（纜車 ${l.gondola}）</strong></div>
+        <div><span>索道</span><strong>${l.total} 條（纜車 ${l.gondola}）</strong>${l.peopleMover ? `<small class="hint pm-note">另有人行輸送帶 ${l.peopleMover} 條</small>` : ''}</div>
         <div><span>總運力</span><strong>${cap}</strong></div>
       </div>
       <div class="info-box"><div class="label">主力索道</div>
