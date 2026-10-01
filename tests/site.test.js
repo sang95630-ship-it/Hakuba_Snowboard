@@ -440,6 +440,36 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(page.errors.length, 0, '手機版無 JS 錯誤：' + page.errors.join(' | '));
   await ctx.close();
 
+  // ---------- 11b. Desktop widths (ZhangJiaJie 85vw) ----------
+  console.log('\n[11b] 電腦版闊度與雪場卡欄數');
+  for (const [vw, cols] of [[1024, 2], [1200, 2], [1280, 3], [1366, 3], [1920, 3], [2560, 3]]) {
+    ({ ctx, page } = await newPage({ viewport: { width: vw, height: 900 } }));
+    await page.goto(BASE); await page.waitForSelector('.flip');
+    const m = await page.evaluate(() => {
+      const c = document.querySelector('#overview .container').getBoundingClientRect().width;
+      const tops = [...document.querySelectorAll('.flip')].map(f => Math.round(f.getBoundingClientRect().top));
+      return { c, firstRow: tops.filter(t => t === tops[0]).length, sw: document.documentElement.scrollWidth };
+    });
+    const expectW = Math.min(vw * 0.85, vw - 48);
+    ok(Math.abs(m.c - expectW) < 1, `${vw}px：內容闊 ${Math.round(m.c)}px（預期 ${Math.round(expectW)}px）`);
+    eq(m.firstRow, cols, `${vw}px：雪場卡每行 ${cols} 張`);
+    ok(m.sw <= vw, `${vw}px：無水平捲動`);
+    const clipOk = await page.$$eval('.flip', cs => cs.every(c => c.querySelector('.face.back').scrollHeight <= c.querySelector('.flip-inner').clientHeight + 1));
+    ok(clipOk, `${vw}px：卡背內容不被裁切`);
+    const maxTitleLines = await page.$$eval('.face.front .face-head h3', hs => Math.max(...hs.map(h => Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)))));
+    ok(maxTitleLines <= 2, `${vw}px：雪場卡標題最多 2 行（實際 ${maxTitleLines}）`);
+    if (vw === 1920 || vw === 1280) {
+      await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}' });
+      await page.evaluate(() => document.getElementById('resorts').scrollIntoView());
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: path.join(SHOTS, `width-${vw}-resorts.png`) });
+      await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(300);
+      await page.screenshot({ path: path.join(SHOTS, `width-${vw}-hero.png`) });
+    }
+    eq(page.errors.length, 0, `${vw}px：JS 無錯誤`);
+    await ctx.close();
+  }
+
   // ---------- 12. Leaflet fallback ----------
   console.log('\n[12] Leaflet 載入失敗後備');
   ({ ctx, page } = await newPage());

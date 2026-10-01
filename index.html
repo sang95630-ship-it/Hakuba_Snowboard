@@ -67,7 +67,7 @@ button{border:none;background:none;cursor:pointer}
 a{color:var(--color-primary)}
 a:hover{color:var(--color-primary-hover)}
 :focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
-.container{width:min(1200px,calc(100% - 2rem));margin-inline:auto}
+.container{width:min(85vw,calc(100% - 3rem));margin-inline:auto}  /* 與 ZhangJiaJie 一致：佔畫面 85% */
 .skip-link{position:absolute;left:-999px;top:0}
 .skip-link:focus{left:1rem;top:1rem;background:var(--color-primary);
   color:var(--color-text-inverse);padding:.75rem 1rem;border-radius:var(--radius-md);z-index:1000}
@@ -235,7 +235,9 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .ratio-legend .b::before{background:var(--lv-beginner)}.ratio-legend .m::before{background:var(--lv-intermediate)}.ratio-legend .a::before{background:var(--lv-advanced)}
 
 /* ===== RESORT FLIP CARDS ===== */
-.resort-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:var(--space-5)}
+.resort-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5)}  /* 電腦版固定每行 3 張 */
+@media(max-width:1279px){.resort-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.resort-grid{grid-template-columns:minmax(0,1fr)}}
 .flip{perspective:1600px}
 .flip-inner{display:grid;transition:transform .7s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
 .flip.is-flipped .flip-inner{transform:rotateY(180deg)}
@@ -244,7 +246,8 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .flip:not(.is-flipped) .face.back,.flip.is-flipped .face.front{visibility:hidden;transition:visibility 0s .35s}
 .flip.is-flipped .face.back,.flip:not(.is-flipped) .face.front{visibility:visible;transition:visibility 0s 0s}
 @media (prefers-reduced-motion:reduce){.flip-inner{transition:none}}
-.face-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem}
+.face-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.5rem .8rem}
+.face-head > div{flex:1 1 11rem;min-width:0}
 .face-head h3{font-size:var(--text-lg)}
 .face-head small{display:block;color:var(--color-text-muted);font-size:var(--text-xs)}
 .flip-btn{flex:none;padding:.4rem .8rem;border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:700;
