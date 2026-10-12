@@ -203,7 +203,14 @@
         "arr": "13:20",
         "from": "香港 HKG T1",
         "to": "東京成田 NRT T1",
-        "duration": "4 小時 10 分"
+        "duration": "4 小時 10 分",
+        "baggage": {
+          "type": "寄艙行李",
+          "pieces": 1,
+          "kg": 23,
+          "basis": "每人",
+          "status": "verified"
+        }
       },
       "return": {
         "flight": "HX605",
@@ -213,7 +220,14 @@
         "arr": "18:55",
         "from": "東京成田 NRT T1",
         "to": "香港 HKG T1",
-        "duration": "5 小時 35 分"
+        "duration": "5 小時 35 分",
+        "baggage": {
+          "type": "寄艙行李",
+          "pieces": 1,
+          "kg": 23,
+          "basis": "每人",
+          "status": "verified"
+        }
       },
       "connections": [
         {

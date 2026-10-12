@@ -59,6 +59,12 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   ok(!ftxt.includes('不一致'), '沒有日期不一致警告');
   eq(await page.$$eval('#flights li', ls => ls.filter(l => l.textContent.trim() === '。' || l.textContent.trim() === '').length), 0, '注意事項沒有空白項目');
   eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
+  const bags = await page.$$eval('#flights .flight-card .f-bag', ps => ps.map(p => p.textContent.trim()));
+  eq(bags.length, 3, '去程、回程及機票卡均顯示行李');
+  ok(bags[0].includes('寄艙行李 1 件 × 23 kg（每人）'), '去程：寄艙行李 1 件 × 23 kg');
+  ok(bags[1].includes('寄艙行李 1 件 × 23 kg（每人）'), '回程：寄艙行李 1 件 × 23 kg');
+  ok(bags[2].includes('已含來回程寄艙行李各 1 件 × 23 kg'), '機票卡註明已含來回行李');
+  eq(fl.outbound.baggage.kg + fl.return.baggage.kg, 46, '數據：來回程各 23 kg');
 
   // ---------- 2. Data fidelity ----------
   console.log('\n[2] 數據核對（表格 vs JSON）');

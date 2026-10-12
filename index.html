@@ -325,6 +325,7 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .f-route .end{text-align:right}
 .f-mid{text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);min-width:5.5rem}
 .f-mid::before{content:"";display:block;height:2px;margin:.35rem 0;background:linear-gradient(90deg,var(--color-border),var(--color-primary),var(--color-border))}
+.f-bag{margin-top:.75rem;padding-top:.6rem;border-top:1px dashed var(--color-divider);font-size:var(--text-sm);color:var(--color-text-muted)}
 .f-price{font-size:var(--text-xl);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums}
 .flight-extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-4);margin-top:var(--space-4)}
 .budget-sticky{display:none}
@@ -623,7 +624,8 @@ function flightsHTML(meta){
       <div><div class="t">${esc(x.dep)}</div><div class="p">${esc(x.from)}</div></div>
       <div class="f-mid">${esc(x.duration)}</div>
       <div class="end"><div class="t">${esc(x.arr)}</div><div class="p">${esc(x.to)}</div></div>
-    </div></article>`;
+    </div>
+    ${x.baggage ? `<p class="f-bag"><span aria-hidden="true">🧳</span> ${esc(x.baggage.type)} ${x.baggage.pieces} 件 × ${x.baggage.kg} kg（${esc(x.baggage.basis)}）</p>` : ''}</article>`;
   return `
 <section class="section" id="flights">
   <div class="container">
@@ -635,6 +637,7 @@ function flightsHTML(meta){
         <div class="f-head"><span class="f-dir">機票</span><span class="f-date">${esc(f.priceBasis)}</span></div>
         <div class="f-price">HK$${fmtInt(f.priceHKD)}</div>
         <p class="hint">≈ ${yen(f.priceHKD / rate)}（按 1 JPY = ${rate} HKD）· 已計入下方預算試算</p>
+        ${f.outbound.baggage && f.return.baggage ? `<p class="f-bag"><span aria-hidden="true">🧳</span> 已含來回程寄艙行李各 ${f.outbound.baggage.pieces} 件 × ${f.outbound.baggage.kg} kg</p>` : ''}
       </article>
     </div>
     <div class="flight-extra">
