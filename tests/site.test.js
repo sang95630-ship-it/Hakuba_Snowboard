@@ -53,11 +53,12 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   console.log('\n[1b] 航班');
   const fl = data.meta.flights;
   const ftxt = await page.textContent('#flights');
-  for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-04（四）', '2027-03-09（二）', 'HKG T2', 'HKG T1', 'NRT T1', 'HK$2,629', '超值飛', '已核實'])
+  for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-04（四）', '2027-03-09（二）', 'HKG T2', 'HKG T1', 'NRT T1', 'HK$2,629', '超值飛', '每人來回', '已核實'])
     ok(ftxt.includes(t), `航班資料含「${t}」`);
   ok(ftxt.includes(yen(fl.priceHKD / data.meta.exchangeRate.rate)), '機票日圓換算');
   ok(ftxt.includes('3/7 及 3/8 晚未有住宿'), '提示航班 3/4–3/9 與 Airbnb 3/2–3/7 不一致');
   ok(ftxt.includes('票價包括機票價、附加費、稅項、費用及收費'), '註明票價包括稅項及附加費');
+  ok(!ftxt.includes('推斷'), '票價基準已確認，不再標示推斷');
   eq(await page.$$eval('#flights li', ls => ls.filter(l => l.textContent.trim() === '。' || l.textContent.trim() === '').length), 0, '注意事項沒有空白項目');
   eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
   const bags = await page.$$eval('#flights .flight-card .f-bag', ps => ps.map(p => p.textContent.trim()));

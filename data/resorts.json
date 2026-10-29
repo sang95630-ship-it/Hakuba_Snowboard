@@ -191,7 +191,7 @@
     "flights": {
       "airline": "香港航空 Hong Kong Airlines",
       "priceHKD": 2629,
-      "priceBasis": "每人來回（推斷）",
+      "priceBasis": "每人來回",
       "status": "verified",
       "checked": "2026-10 用戶核實",
       "yearNote": "",
