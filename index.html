@@ -252,7 +252,9 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 @media(max-width:1279px){.resort-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.resort-grid{grid-template-columns:minmax(0,1fr)}}
 .flip{perspective:1600px}
-.flip-inner{display:grid;transition:transform .7s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+.flip-inner{display:grid;position:relative;transition:transform .7s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+/* 未翻轉時背面不佔高度（與 ZhangJiaJie syncFlipHeight 修正一致）：卡片只按正面高度，翻轉後才撐到背面高度 */
+.flip:not(.show-back) .face.back{position:absolute;top:0;left:0;width:100%;max-height:100%;overflow:hidden}
 .flip.is-flipped .flip-inner{transform:rotateY(180deg)}
 .face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;gap:var(--space-4)}
 .face.back{transform:rotateY(180deg)}
@@ -325,6 +327,7 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .f-route .end{text-align:right}
 .f-mid{text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);min-width:5.5rem}
 .f-mid::before{content:"";display:block;height:2px;margin:.35rem 0;background:linear-gradient(90deg,var(--color-border),var(--color-primary),var(--color-border))}
+.f-fare{margin-left:.5rem;vertical-align:.2em;font-family:var(--font-body)}
 .f-bag{margin-top:.75rem;padding-top:.6rem;border-top:1px dashed var(--color-divider);font-size:var(--text-sm);color:var(--color-text-muted)}
 .f-price{font-size:var(--text-xl);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums}
 .flight-extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-4);margin-top:var(--space-4)}
@@ -634,9 +637,10 @@ function flightsHTML(meta){
       ${leg('去程', f.outbound)}
       ${leg('回程', f.return)}
       <article class="card flight-card">
-        <div class="f-head"><span class="f-dir">機票</span><span class="f-date">${esc(f.priceBasis)}</span></div>
+        <div class="f-head"><span class="f-dir">機票${f.fareClass ? `<span class="pill f-fare">${esc(f.fareClass)}</span>` : ''}</span><span class="f-date">${esc(f.priceBasis)}</span></div>
         <div class="f-price">HK$${fmtInt(f.priceHKD)}</div>
         <p class="hint">≈ ${yen(f.priceHKD / rate)}（按 1 JPY = ${rate} HKD）· 已計入下方預算試算</p>
+        ${f.priceNote ? `<p class="hint">${esc(f.priceNote)}</p>` : ''}
         ${f.outbound.baggage && f.return.baggage ? `<p class="f-bag"><span aria-hidden="true">🧳</span> 已含來回程寄艙行李各 ${f.outbound.baggage.pieces} 件 × ${f.outbound.baggage.kg} kg</p>` : ''}
       </article>
     </div>
@@ -943,6 +947,10 @@ function initFlip(){
       const btn = e.target.closest('[data-flip]');
       if (!btn) return;
       const flipped = btn.dataset.flip === 'open';
+      clearTimeout(card._heightTimer);
+      if (flipped) card.classList.add('show-back');
+      // 翻回正面的動畫（0.7 秒）完成後，才收回背面高度
+      else card._heightTimer = setTimeout(() => { if (!card.classList.contains('is-flipped')) card.classList.remove('show-back'); }, 720);
       card.classList.toggle('is-flipped', flipped);
       setInert(flipped);
       const target = flipped ? $('[data-flip="close"]', card) : $('[data-flip="open"]', card);
@@ -958,7 +966,7 @@ function budgetHTML(R, meta){
   return `
 <section class="section" id="budget">
   <div class="container">
-    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設按已核實航班（3/2–3/7）：2 人（行程至少 2 人；住宿按人頭收費，多人沒有優惠）、滑雪 4 天、住 5 晚、成田機場乘鐵路 + 巴士往返白馬，並計入機票。</p></div>
+    <div class="section-head"><h2>滑雪預算試算</h2><p>所有價格以日圓計算，同步換算港幣。預設按已核實航班（3/4–3/9）：2 人（行程至少 2 人；住宿按人頭收費，多人沒有優惠）、滑雪 4 天、住 5 晚、成田機場乘鐵路 + 巴士往返白馬，並計入機票。</p></div>
     <div class="budget-grid">
       <form class="card budget-form" id="budgetForm" novalidate>
         <fieldset>
