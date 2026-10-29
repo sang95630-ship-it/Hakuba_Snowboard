@@ -53,10 +53,12 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   console.log('\n[1b] 航班');
   const fl = data.meta.flights;
   const ftxt = await page.textContent('#flights');
-  for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-02（二）', '2027-03-07（日）', 'HKG T1', 'NRT T1', 'HK$2,798', '已核實'])
+  for (const t of ['HX604', 'HX605', '08:10', '13:20', '14:20', '18:55', '4 小時 10 分', '5 小時 35 分', '2027-03-04（四）', '2027-03-09（二）', 'HKG T2', 'HKG T1', 'NRT T1', 'HK$2,629', '超值飛', '每人來回', '已核實'])
     ok(ftxt.includes(t), `航班資料含「${t}」`);
   ok(ftxt.includes(yen(fl.priceHKD / data.meta.exchangeRate.rate)), '機票日圓換算');
-  ok(!ftxt.includes('不一致'), '沒有日期不一致警告');
+  ok(ftxt.includes('3/7 及 3/8 晚未有住宿'), '提示航班 3/4–3/9 與 Airbnb 3/2–3/7 不一致');
+  ok(ftxt.includes('票價包括機票價、附加費、稅項、費用及收費'), '註明票價包括稅項及附加費');
+  ok(!ftxt.includes('推斷'), '票價基準已確認，不再標示推斷');
   eq(await page.$$eval('#flights li', ls => ls.filter(l => l.textContent.trim() === '。' || l.textContent.trim() === '').length), 0, '注意事項沒有空白項目');
   eq(await page.locator('.site-nav a[href="#flights"]').count(), 1, '導覽有「航班」');
   const bags = await page.$$eval('#flights .flight-card .f-bag', ps => ps.map(p => p.textContent.trim()));
@@ -176,16 +178,16 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRate'), '0.0498', '預設匯率 0.0498');
   eq(await page.inputValue('#bRoomPrice'), '36766', '預設房價 = 已選 Airbnb（HK$9,154.72 ÷ 5 晚 ÷ 0.0498）');
   ok((await page.textContent('#roomHint')).includes('HK$9,154.72'), '住宿提示顯示已選 Airbnb 價');
-  // default 2 人 4 日 5 晚: 52,000 + 160,000 + (60,400 + 12,800) + 94,000 + 機票 2×2798/0.0498
+  // default 2 人 4 日 5 晚: 52,000 + 160,000 + (60,400 + 12,800) + 94,000 + 機票 2×2629/0.0498
   eq(await page.inputValue('#bDays'), '4', '預設滑雪 4 日（按航班）');
-  eq(await total(), yen(52000 + 183830 + 73200 + 94000 + 2 * 2798 / 0.0498), '預設總額（含機票）');
-  eq((await page.textContent('#totalHkd')).trim(), 'HK$25,667', '預設總額 HKD（0.0498）');
+  eq(await total(), yen(52000 + 183830 + 73200 + 94000 + 2 * 2629 / 0.0498), '預設總額（含機票）');
+  eq((await page.textContent('#totalHkd')).trim(), 'HK$25,329', '預設總額 HKD（0.0498）');
   ok((await page.textContent('#passAdvice')).includes('¥18,400'), '全山通票比較：目前便宜 ¥18,400');
   ok((await page.textContent('#dayList')).includes('¥6,500 早鳥'), '每日選單標示栂池早鳥價');
   const resText = await page.textContent('#resultRows');
   ok(resText.includes('¥52,000') && resText.includes('¥183,830') && resText.includes('HK$9,155') && resText.includes('¥73,200') && resText.includes('¥94,000'), '四項小計正確');
-  ok(resText.includes('HK$5,596') && resText.includes('HK$2,798 × 2 人'), '機票 HK$2,798 × 2 = HK$5,596');
-  ok(resText.includes('每人平均 ¥257,700'), '每人平均');
+  ok(resText.includes('HK$5,258') && resText.includes('HK$2,629 × 2 人'), '機票 HK$2,629 × 2 = HK$5,258');
+  ok(resText.includes('每人平均 ¥254,306'), '每人平均');
   ok(resText.includes('每人 ¥26,000'), '雪票每人 ¥6,500 × 4');
   const withFlight = await total();
   await page.uncheck('#bFlight');
@@ -206,10 +208,10 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   eq(await page.inputValue('#bRooms'), '2', '3 人自動 2 房');
   eq(await page.inputValue('#bRentPeople'), '3', '租借人數跟隨');
   // ticket 8200*5*3; lodging 32000*2*5; transport 15100*2*3 + 800*2*5*3; rental (57500+1000)*3
-  eq(await total(), yen(78000 + 367660 + 90600 + 19200 + 141000 + 3 * 2798 / 0.0498), '3 人總額（含機票）');
+  eq(await total(), yen(78000 + 367660 + 90600 + 19200 + 141000 + 3 * 2629 / 0.0498), '3 人總額（含機票）');
 
   await page.click('[data-fill="valley"]');
-  eq(await total(), yen(124800 + 367660 + 90600 + 141000 + 3 * 2798 / 0.0498), '全山通票總額（接駁免費）');
+  eq(await total(), yen(124800 + 367660 + 90600 + 141000 + 3 * 2629 / 0.0498), '全山通票總額（接駁免費）');
   ok((await page.textContent('#passAdvice')).includes('已全部使用全山通票'), '全山通票提示');
 
   await page.fill('#bDays', '3'); await page.dispatchEvent('#bDays', 'input');
@@ -269,8 +271,19 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
   await card.locator('[data-flip="close"]').click();
   ok(!(await card.evaluate(el => el.classList.contains('is-flipped'))), '翻回正面');
   // back face fully within card height (no clipping)
-  const clip = await page.$$eval('.flip', cards => cards.map(c => { const i = c.querySelector('.flip-inner'); const b = c.querySelector('.face.back'); return b.scrollHeight <= i.clientHeight + 1; }));
-  ok(clip.every(Boolean), '背面內容不被裁切');
+  // 未翻轉：卡片只按正面高度；翻轉後撐到背面高度，背面不被裁切；翻回後收回
+  for (const r of data.resorts) {
+    const c = page.locator('#card-' + r.id);
+    const h0 = await c.evaluate(el => ({ card: el.querySelector('.flip-inner').getBoundingClientRect().height, front: el.querySelector('.face.front').scrollHeight }));
+    ok(Math.abs(h0.card - h0.front) <= 2 || h0.card > h0.front, `${r.name}：未翻轉時不預留背面高度`);
+    await c.locator('[data-flip="open"]').click();
+    await page.waitForTimeout(80);
+    const h1 = await c.evaluate(el => ({ inner: el.querySelector('.flip-inner').clientHeight, back: el.querySelector('.face.back').scrollHeight }));
+    ok(h1.back <= h1.inner + 1, `${r.name}：翻轉後背面完整顯示不被裁切`);
+    await c.locator('[data-flip="close"]').click();
+    await page.waitForTimeout(850);
+    ok(!(await c.evaluate(el => el.classList.contains('show-back'))), `${r.name}：翻回動畫完成後收回背面高度`);
+  }
 
   // ---------- 5b. Checked prices on card back ----------
   console.log('\n[5b] 卡背「已核實價格」');
@@ -518,8 +531,14 @@ const yen = n => '¥' + Math.round(n).toLocaleString('en-US');
     ok(Math.abs(m.c - expectW) < 1, `${vw}px：內容闊 ${Math.round(m.c)}px（預期 ${Math.round(expectW)}px）`);
     eq(m.firstRow, cols, `${vw}px：雪場卡每行 ${cols} 張`);
     ok(m.sw <= vw, `${vw}px：無水平捲動`);
-    const clipOk = await page.$$eval('.flip', cs => cs.every(c => c.querySelector('.face.back').scrollHeight <= c.querySelector('.flip-inner').clientHeight + 1));
-    ok(clipOk, `${vw}px：卡背內容不被裁切`);
+    const ts = page.locator('#card-tsugaike');
+    const before = await ts.evaluate(el => el.getBoundingClientRect().height);
+    await ts.locator('[data-flip="open"]').click(); await page.waitForTimeout(80);
+    const clipOk = await ts.evaluate(el => el.querySelector('.face.back').scrollHeight <= el.querySelector('.flip-inner').clientHeight + 1);
+    ok(clipOk, `${vw}px：栂池卡背（最長）翻轉後不被裁切`);
+    const frontH = await ts.evaluate(el => el.querySelector('.face.front').scrollHeight);
+    ok(before <= Math.max(frontH, await page.$$eval('.flip', cs => Math.max(...cs.map(c => c.querySelector('.face.front').scrollHeight)))) + 2, `${vw}px：未翻轉時卡片高度不超過該行正面最高者`);
+    await ts.locator('[data-flip="close"]').click(); await page.waitForTimeout(800);
     const maxTitleLines = await page.$$eval('.face.front .face-head h3', hs => Math.max(...hs.map(h => Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)))));
     ok(maxTitleLines <= 2, `${vw}px：雪場卡標題最多 2 行（實際 ${maxTitleLines}）`);
     if (vw === 1920 || vw === 1280) {
