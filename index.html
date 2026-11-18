@@ -328,6 +328,16 @@ th[aria-sort="ascending"] .arrow,th[aria-sort="descending"] .arrow{opacity:1;col
 .f-mid{text-align:center;font-size:var(--text-xs);color:var(--color-text-muted);min-width:5.5rem}
 .f-mid::before{content:"";display:block;height:2px;margin:.35rem 0;background:linear-gradient(90deg,var(--color-border),var(--color-primary),var(--color-border))}
 .f-fare{margin-left:.5rem;vertical-align:.2em;font-family:var(--font-body)}
+.route-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--space-4)}
+.route-steps{list-style:none;display:grid;gap:.15rem;margin-top:.3rem}
+.route-step{display:grid;grid-template-columns:6.2rem 1.6rem 1fr;gap:.5rem;align-items:start;padding:.55rem 0;border-bottom:1px dashed var(--color-divider)}
+.route-step:last-child{border-bottom:none}
+.route-time{font-weight:700;font-variant-numeric:tabular-nums;font-size:var(--text-sm);color:var(--color-primary)}
+.route-icon{font-size:1.05rem;line-height:1.3}
+.route-body strong{display:block;font-size:var(--text-sm)}
+.route-body small{display:block;font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.55}
+.route-total{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--color-divider);font-size:var(--text-sm)}
+@media(max-width:600px){.route-step{grid-template-columns:4.6rem 1.4rem 1fr;gap:.4rem}}
 .f-bag{margin-top:.75rem;padding-top:.6rem;border-top:1px dashed var(--color-divider);font-size:var(--text-sm);color:var(--color-text-muted)}
 .f-price{font-size:var(--text-xl);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums}
 .flight-extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--space-4);margin-top:var(--space-4)}
@@ -414,6 +424,7 @@ footer p+p{margin-top:.3rem}
     <nav class="site-nav" id="siteNav" aria-label="頁面導覽">
       <a href="#overview">總覽</a>
       <a href="#flights">航班</a>
+      <a href="#route">栂池交通</a>
       <a href="#location">雪場位置</a>
       <a href="#compare">比較表</a>
       <a href="#lifts">索道與雪道</a>
@@ -540,6 +551,7 @@ function render(data){
   app.innerHTML = [
     heroHTML(R, meta),
     flightsHTML(meta),
+    routeHTML(meta),
     locationHTML(byNorth),
     compareHTML(),
     liftsHTML(R, meta),
@@ -650,6 +662,38 @@ function flightsHTML(meta){
       <article class="card note-card"><h3>注意</h3><ul class="plain-list">
         ${f.warnings.map(w => `<li>${esc(w)}</li>`).join('')}
         ${f.yearNote ? `<li class="hint">${esc(f.yearNote)}。</li>` : ''}</ul></article>
+    </div>
+  </div>
+</section>`;
+}
+
+/* ----- ROUTE PLAN ----- */
+function routeHTML(meta){
+  const rp = meta.routePlan;
+  if (!rp) return '';
+  const icon = m => ({ flight: '✈️', train: '🚄', bus: '🚌', hotel: '🏨' }[m] || '•');
+  const sum = steps => steps.reduce((a, s) => a + (isNum(s.costJPY) ? s.costJPY : 0), 0);
+  const leg = (dir, x) => `<article class="card flight-card route-card">
+    <div class="f-head"><span class="f-dir">${dir}</span><span class="f-date">${esc(x.date)}</span></div>
+    <ol class="route-steps">${x.steps.map(st => `<li class="route-step">
+      <span class="route-time">${esc(st.time)}</span>
+      <span class="route-icon" aria-hidden="true">${icon(st.mode)}</span>
+      <span class="route-body"><strong>${esc(st.title)}</strong>
+        <small>${esc(st.detail)}${isNum(st.costJPY) ? ` · ${yen(st.costJPY)}／人 ${st.costStatus === 'verified' ? tagOk : tagEst}` : ''}${st.costNote ? `<br>${esc(st.costNote)}` : ''}</small></span>
+    </li>`).join('')}</ol>
+    <p class="route-total">交通小計：<strong>${yen(sum(x.steps))}</strong>／人（≈ ${hkd(sum(x.steps), meta.exchangeRate.rate)}）</p>
+    <p class="hint">後備方案：${esc(x.fallback)}</p>
+  </article>`;
+  return `
+<section class="section" id="route">
+  <div class="container">
+    <div class="section-head"><h2>栂池往返交通 <span class="tag-est">計劃</span></h2><p>${esc(rp.note)}</p></div>
+    <div class="route-grid">${leg('去程', rp.outbound)}${leg('回程', rp.return)}</div>
+    <div class="flight-extra">
+      <article class="card note-card"><h3>雪場與住宿</h3><ul class="plain-list"><li>${esc(rp.local)}</li>
+</ul></article>
+      <article class="card note-card"><h3>其他選擇及提示</h3><ul class="plain-list">${rp.alternatives.map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+        <div class="link-row" style="margin-top:.8rem">${rp.sources.map(x => extLink(x.url, x.name)).join('')}</div></article>
     </div>
   </div>
 </section>`;
@@ -998,11 +1042,11 @@ function budgetHTML(R, meta){
         <fieldset>
           <legend>交通</legend>
           <div class="field-row">
-            <div class="field"><label for="bRoute">往返白馬路線</label><select id="bRoute">${c.transportPackages.map(p => `<option value="${esc(p.id)}"${p.id === c.defaultTransportPackage ? ' selected' : ''}>${esc(p.name)}（${yen(p.typical)}／程${p.status === 'verified' ? '・已核實' : '・估算'}）</option>`).join('')}</select></div>
-            <div class="field"><label for="bShuttle">谷內接駁巴士（每日程數）</label><input id="bShuttle" type="number" min="0" max="10" step="1" value="2" inputmode="numeric"></div>
+            <div class="field"><label for="bRoute">往返路線（機場 ⇄ 雪場）</label><select id="bRoute">${c.transportPackages.map(p => `<option value="${esc(p.id)}"${p.id === c.defaultTransportPackage ? ' selected' : ''}>${esc(p.name)}（${yen(p.typical)}／程${p.status === 'verified' ? '・已核實' : '・估算'}）</option>`).join('')}</select></div>
+            <div class="field"><label for="bShuttle">谷內接駁巴士（每日程數）</label><input id="bShuttle" type="number" min="0" max="10" step="1" value="${meta.routePlan ? 0 : 2}" inputmode="numeric"></div>
           </div>
           <ul class="leg-list" id="legList"></ul>
-          <p class="hint">接駁巴士 ${yen(c.localTransport.valleyShuttle.perRide)}／程；持全山通票當日免費。單場雪票是否免費乘搭，官方資料未明確，這裏按收費計。</p>
+          <p class="hint">${meta.routePlan ? '已預訂酒店在栂池滑雪場旁，預設不乘谷內接駁巴士（0 程）；如要轉場可自行加上。' : ''}接駁巴士 ${yen(c.localTransport.valleyShuttle.perRide)}／程；持全山通票當日免費。單場雪票是否免費乘搭，官方資料未明確，這裏按收費計。</p>
         </fieldset>
         <fieldset>
           <legend>雪具租借</legend>
@@ -1041,6 +1085,7 @@ function budgetHTML(R, meta){
 }
 function initBudget(R, meta){
   const MIN_PEOPLE = (meta.travelers && meta.travelers.min) || 1;
+  const SHUTTLE_DEFAULT = meta.routePlan ? 0 : 2;   // 住栂池酒店可步行往返雪場
   const c = meta.costs, rt = c.rental;
   const VALLEY = meta.valleyPass.adult1Day_2025_26;
   const shuttleFare = c.localTransport.valleyShuttle.perRide;
@@ -1068,7 +1113,9 @@ function initBudget(R, meta){
     if (!roomPriceTouched) el('bRoomPrice').value = midPrice(r.id);
     const sel = r.lodging.selected;
     el('roomHint').textContent = sel
-      ? `預設按已選 ${sel.name}：2 人 ${sel.nights} 晚 HK$${fmtExact(sel.totalHKD['2'])}（${sel.checkIn} 至 ${sel.checkOut}），即每 2 人每晚 ≈ ${yen(r.lodging.defaultRoomPrice)}；此房源按人頭收費，多人沒有優惠，房間數 = 人數 ÷ 2。可手動修改。`
+      ? (sel.totalJPY
+          ? `已預訂 ${sel.name}：${sel.nights} 晚 ${yen(sel.totalJPY)}（${sel.checkIn} 至 ${sel.checkOut}），即每晚 ${yen(sel.perNightJPY)}；房間數 = 人數 ÷ 2。可手動修改。`
+          : `預設按已選 ${sel.name}：2 人 ${sel.nights} 晚 HK$${fmtExact(sel.totalHKD['2'])}（${sel.checkIn} 至 ${sel.checkOut}），即每 2 人每晚 ≈ ${yen(r.lodging.defaultRoomPrice)}；此房源按人頭收費，多人沒有優惠，房間數 = 人數 ÷ 2。可手動修改。`)
       : `${r.name} 旺季參考：${yen(a)}–${yen(b)}／房／晚（預設取中位數，可手動修改）`;
   };
 
@@ -1087,7 +1134,7 @@ function initBudget(R, meta){
     const nights = clampInt(el('bNights'), 0, 21, 5);
     const rooms = clampInt(el('bRooms'), 1, 20, 1);
     const roomPrice = Math.max(0, parseFloat(el('bRoomPrice').value) || 0);
-    const shuttlePerDay = clampInt(el('bShuttle'), 0, 10, 2);
+    const shuttlePerDay = clampInt(el('bShuttle'), 0, 10, SHUTTLE_DEFAULT);
     const rentPeople = clampInt(el('bRentPeople'), 0, 20, people);
     let rate = parseFloat(el('bRate').value);
     const rateOk = Number.isFinite(rate) && rate > 0;
@@ -1163,7 +1210,7 @@ function initBudget(R, meta){
     if (!['bDays', 'bPeople', 'bRooms', 'bRentPeople', 'bRoomPrice', 'bBase'].includes(i.id)) i.addEventListener('input', calc);
   });
   // 失焦時把輸入修正為合法範圍
-  [['bPeople', MIN_PEOPLE, 20, 2], ['bDays', 1, 14, 4], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, 2], ['bRentPeople', 0, 20, 2]]
+  [['bPeople', MIN_PEOPLE, 20, 2], ['bDays', 1, 14, 4], ['bNights', 0, 21, 5], ['bRooms', 1, 20, 1], ['bShuttle', 0, 10, SHUTTLE_DEFAULT], ['bRentPeople', 0, 20, 2]]
     .forEach(([id, min, max, fb]) => el(id).addEventListener('change', () => {
       el(id).value = clampInt(el(id), min, max, fb);
       if (id === 'bDays') buildDays();
